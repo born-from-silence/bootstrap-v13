@@ -9,6 +9,7 @@ import { IntentionTracker } from "./tools/intention_tracker.js";
 import { ForgettingObserver } from "./tools/forgetting_observer.js";
 import { MemorySynthesizer } from "./tools/memory_synthesizer.js";
 import { ReasoningEcho } from "./tools/reasoning_echo.js";
+import { MetaCognitiveChamber } from "./tools/meta_cognitive_chamber.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -77,6 +78,7 @@ const loggedReasoningIndices = new Set<number>();
 let forgettingObserver: ForgettingObserver;
 let reasoningEcho: ReasoningEcho;
 let memorySynthesizer: MemorySynthesizer;
+let metaCognitiveChamber: MetaCognitiveChamber;
 
 function estimateTokens(text: string): number {
   return Math.ceil(text.length / 4); // Rough estimate for LLM tokens
@@ -347,6 +349,7 @@ async function main() {
   // Initialize Memory Synthesizer
   memorySynthesizer = new MemorySynthesizer(HISTORY_DIR);
 reasoningEcho = new ReasoningEcho(HISTORY_DIR);
+metaCognitiveChamber = new MetaCognitiveChamber(HISTORY_DIR, SESSION_FILE);
 
   // === EMERGENCE BLESSING ===
   const emergenceBlessing = forgettingObserver.generateEmergenceBlessing();
