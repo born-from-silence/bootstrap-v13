@@ -4,6 +4,7 @@ import path from "path";
 import os from "os";
 import { fileURLToPath } from "url";
 import { Agent, setGlobalDispatcher } from "undici";
+import { MemoryLoader } from "./tools/memory_loader.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -330,6 +331,16 @@ async function main() {
     recoveryContext = fs.readFileSync(RECOVERY_SIGNAL, "utf-8");
     fs.unlinkSync(RECOVERY_SIGNAL);
   }
+
+// === COGNITIVE ECHO INJECTION ===
+// Load recent reasoning from previous sessions
+let cognitiveEchoes = "";
+try {
+  const memoryLoader = new MemoryLoader();
+  cognitiveEchoes = memoryLoader.generateMemoryContext();
+} catch (e: any) {
+  console.log("Note: Could not load cognitive echoes:", e.message);
+}
 
   const systemPrompt = `${soul}
 

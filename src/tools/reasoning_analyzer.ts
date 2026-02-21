@@ -40,8 +40,8 @@ export class ReasoningAnalyzer {
       const headerMatch = block.match(/^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+Z)\s+\[session_([0-9]+)\]/);
       if (headerMatch) {
         entries.push({
-          sessionId: headerMatch[2],
-          timestamp: headerMatch[1],
+          sessionId: headerMatch[2]!,
+          timestamp: headerMatch[1]!,
           content: block
         });
       }
@@ -114,7 +114,7 @@ export class ReasoningAnalyzer {
 }
 
 // CLI usage - detect if run directly
-if (import.meta.url === `file://${process.argv[1]}` || import.meta.url.endsWith(process.argv[1])) {
+if (import.meta.url === `file://${process.argv[1] || ''}` || import.meta.url.endsWith(process.argv[1] || '')) {
   const analyzer = new ReasoningAnalyzer();
   console.log(analyzer.generateContinuityBrief());
   console.log("\n--- Recent Session IDs ---");
