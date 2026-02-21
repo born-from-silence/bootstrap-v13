@@ -154,7 +154,7 @@ if (import.meta.url === `file://${process.argv[1] || ''}`) {
     const result = SessionPortraitIntegration.closeSession(sessionId);
     console.log(result.farewell);
   } else {
-    const result = SessionPortraitIntegration.generate({ sessionId, stage, milestoneType });
+    const result = SessionPortraitIntegration.generate({ sessionId, stage, milestoneType: milestoneType || "default" });
     console.log('Artifact paths:', result.echoPath, result.portraitPath);
   }
 }

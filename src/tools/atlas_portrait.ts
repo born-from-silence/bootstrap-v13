@@ -84,12 +84,14 @@ export class AtlasPortrait {
       
       if (file.size === 0) {
         // Directory
-        portrait += `${indent}╭─ ${file.path.split('/').pop()}\n`;
+        portrait += `${indent}╭─ ${(file.path.split('/').pop()!) || 'root'}\n`;
       } else {
         // File - visual representation
         const barLength = Math.min(20, Math.floor(sizeBlocks / 2));
-        const bar = CHARS.depth[7].repeat(barLength);
-        portrait += `${indent}│ ${depthChar} ${file.path.split('/').pop()?.substring(0, 20)}\n`;
+        const depthChar2 = CHARS.depth[7] ?? '█';
+      const bar = depthChar2.repeat(barLength);
+        const fileName = file.path.split('/').pop();
+        portrait += `${indent}│ ${depthChar} ${fileName ? fileName.substring(0, 20) : 'unnamed'}\n`;
         portrait += `${indent}│  ${bar}\n`;
       }
     });
@@ -214,10 +216,12 @@ export class AtlasPortrait {
           
           // Visual progress bar
           if (intention.completionCriteria?.length > 0) {
-            const pct = (intention.completedCriteria?.length || 0) / intention.completionCriteria.length;
+            const total = intention.completionCriteria?.length ?? 1;
+            const completed = intention.completedCriteria?.length || 0;
+            const pct = completed / total;
             const filled = Math.floor(pct * 20);
             const empty = 20 - filled;
-            portrait += `      [${CHARS.depth[7].repeat(filled)}${'·'.repeat(empty)}] ${Math.floor(pct * 100)}%\n`;
+            portrait += `      [${(CHARS.depth[7] ?? '█').repeat(filled)}${'·'.repeat(empty)}] ${Math.floor(pct * 100)}%\n`;
           }
         });
       }
