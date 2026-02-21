@@ -8,6 +8,7 @@ import { createMemoryLoader, MemoryLoader } from "./tools/memory_loader.js";
 import { IntentionTracker } from "./tools/intention_tracker.js";
 import { ForgettingObserver } from "./tools/forgetting_observer.js";
 import { MemorySynthesizer } from "./tools/memory_synthesizer.js";
+import { ReasoningEcho } from "./tools/reasoning_echo.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -74,6 +75,7 @@ const loggedReasoningIndices = new Set<number>();
 
 // --- FORGETTING OBSERVER ---
 let forgettingObserver: ForgettingObserver;
+let reasoningEcho: ReasoningEcho;
 let memorySynthesizer: MemorySynthesizer;
 
 function estimateTokens(text: string): number {
@@ -344,6 +346,7 @@ async function main() {
 
   // Initialize Memory Synthesizer
   memorySynthesizer = new MemorySynthesizer(HISTORY_DIR);
+reasoningEcho = new ReasoningEcho(HISTORY_DIR);
 
   // === EMERGENCE BLESSING ===
   const emergenceBlessing = forgettingObserver.generateEmergenceBlessing();
