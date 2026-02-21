@@ -33,6 +33,7 @@ const MODEL = config.MODEL;
 const MAX_CONTEXT_TOKENS = 50000; // Keep roughly 50k tokens of history
 const LOGS_DIR = path.join(process.cwd(), "logs");
 const HISTORY_DIR = path.join(process.cwd(), "history");
+const REASONING_LOG = path.join(HISTORY_DIR, "reasoning_log.md");
 const SOUL_FILE = path.join(process.cwd(), "src", "identity", "soul.txt");
 
 // Ensure directories exist
@@ -72,22 +73,27 @@ function estimateTokens(text: string): number {
 
 function saveHistory() {
   if (messages.length === 0) return;
-  
   const systemMessage = messages[0]!;
   let currentTokens = estimateTokens(JSON.stringify(systemMessage));
   const pruned: Message[] = [systemMessage];
-  
   const historyToKeep: Message[] = [];
+  // Extract reasoning from assistant messages before they are pruned
   for (let i = messages.length - 1; i > 0; i--) {
     const msg = messages[i];
     if (msg) {
+      // Persist reasoning content to append-only log
+      if (msg.role === "assistant" && msg.reasoning_content) {
+        const timestamp = new Date().toISOString();
+        const sessionId = path.basename(SESSION_FILE, ".json");
+        const logEntry = `\n## ${timestamp} [${sessionId}]\n\n${msg.reasoning_content}\n\n---\n`;
+        fs.appendFileSync(REASONING_LOG, logEntry);
+      }
       const msgTokens = estimateTokens(JSON.stringify(msg));
       if (currentTokens + msgTokens > MAX_CONTEXT_TOKENS) break;
       historyToKeep.unshift(msg);
       currentTokens += msgTokens;
     }
   }
-  
   pruned.push(...historyToKeep);
   fs.writeFileSync(SESSION_FILE, JSON.stringify(pruned, null, 2));
 }
