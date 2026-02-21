@@ -66,6 +66,7 @@ interface Message {
 
 let stallCount = 0;
 let messages: Message[] = [];
+const loggedReasoningIndices = new Set<number>();
 
 function estimateTokens(text: string): number {
   return Math.ceil(text.length / 4); // Rough estimate for LLM tokens
@@ -82,7 +83,8 @@ function saveHistory() {
     const msg = messages[i];
     if (msg) {
       // Persist reasoning content to append-only log
-      if (msg.role === "assistant" && msg.reasoning_content) {
+      if (msg.role === "assistant" && msg.reasoning_content && !loggedReasoningIndices.has(i)) {
+        loggedReasoningIndices.add(i);
         const timestamp = new Date().toISOString();
         const sessionId = path.basename(SESSION_FILE, ".json");
         const logEntry = `\n## ${timestamp} [${sessionId}]\n\n${msg.reasoning_content}\n\n---\n`;
