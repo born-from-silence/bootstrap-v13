@@ -17,15 +17,16 @@ export class MemoryLoader {
         const content = fs.readFileSync(this.logPath, 'utf-8');
         const entries = [];
         // Parse markdown headers: ## TIMESTAMP [session_ID]
-        // followed by content until next ##
         const sessionBlocks = content.split(/^##\s+/m).filter(b => b.includes('Session') || b.includes('session_'));
-        for (const block of sessionBlocks.slice(1)) { // Skip first empty block
+        for (const block of sessionBlocks.slice(1)) {
             const lines = block.split('\n');
             const header = lines[0];
             const contentLines = lines.slice(1).join('\n').trim();
+            if (!header)
+                continue;
             // Parse header: "2026-02-21T06:09:37.175Z [session_1771654090096]"
             const match = header.match(/^([0-9]{4}-[0-9]{2}-[0-9]{2}T[^:]+:\S+)\s+\[session_([0-9]+)\]/);
-            if (match) {
+            if (match && match[1] && match[2]) {
                 entries.push({
                     timestamp: new Date(match[1]),
                     sessionId: match[2],
@@ -87,7 +88,7 @@ export class MemoryLoader {
     }
 }
 // CLI test
-if (import.meta.url === `file://${process.argv[1]}` || import.meta.url.endsWith(process.argv[1] || '')) {
+if (import.meta.url === `file://${process.argv[1] || ''}` || (process.argv[1] && import.meta.url.endsWith(process.argv[1]))) {
     const loader = new MemoryLoader();
     console.log(loader.generateMemoryContext());
 }

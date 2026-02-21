@@ -88,7 +88,7 @@ export class ReasoningAnalyzer {
     }
 }
 // CLI usage - detect if run directly
-if (import.meta.url === `file://${process.argv[1]}` || import.meta.url.endsWith(process.argv[1])) {
+if (import.meta.url === `file://${process.argv[1] || ''}` || import.meta.url.endsWith(process.argv[1] || '')) {
     const analyzer = new ReasoningAnalyzer();
     console.log(analyzer.generateContinuityBrief());
     console.log("\n--- Recent Session IDs ---");

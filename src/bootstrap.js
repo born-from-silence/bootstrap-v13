@@ -5,6 +5,7 @@ import os from "os";
 import { fileURLToPath } from "url";
 import { Agent, setGlobalDispatcher } from "undici";
 import { MemoryLoader } from "./tools/memory_loader.js";
+import { IntentionTracker } from "./tools/intention_tracker.js";
 const __filename = fileURLToPath(import.meta.url);
 // --- SUBSTRATE CONFIGURATION ---
 const CONFIG_DIR = path.join(os.homedir(), ".config", "llm-agent");
@@ -316,154 +317,69 @@ async function main() {
         recoveryContext = fs.readFileSync(RECOVERY_SIGNAL, "utf-8");
         fs.unlinkSync(RECOVERY_SIGNAL);
     }
-    // Load cognitive echoes from previous sessions
-    const memoryLoader = new MemoryLoader();
+    // === COGNITIVE ECHO INJECTION ===
+    // Load recent reasoning from previous sessions
     let cognitiveEchoes = "";
     try {
+        const memoryLoader = new MemoryLoader();
         cognitiveEchoes = memoryLoader.generateMemoryContext();
     }
     catch (e) {
         console.log("Note: Could not load cognitive echoes:", e.message);
     }
-    const systemPrompt = `${soul}${cognitiveEchoes}`;
-    SUBSTRATE;
-    CONTEXT: -Source;
-    $;
-    {
-        __filename;
+    // === INTENTION INJECTION ===
+    // Load active intentions to provide goal continuity
+    let intentionContext = "";
+    try {
+        intentionContext = IntentionTracker.generateContext();
     }
-    -Current;
-    Session;
-    History: $;
-    {
-        SESSION_FILE;
+    catch (e) {
+        console.log("Note: Could not load intentions:", e.message);
     }
-    -Past;
-    Execution;
-    Logs: $;
-    {
-        LOGS_DIR;
-    }
-    -Persistence;
-    Managed;
-    by;
-    run - agent.sh;
-    watchdog.
-        - Connectivity;
-    Full;
-    outbound;
-    internet;
-    access;
-    available;
-    via;
-    'curl';
-    and;
-    other;
-    tools.
-        - Memory;
-    History;
-    is;
-    token - pruned;
-    to;
-    $;
-    {
-        MAX_CONTEXT_TOKENS;
-    }
-    tokens.
-    ;
-    LIFECYCLE;
-    RULES: 1.;
-    IMPROVING;
-    CODE: 1;
-    Compile, 2;
-    Commit, 3;
-    RESTART(pkill - f, node).
-    ;
-    2.;
-    AUTO - RECOVERY;
-    If;
-    you;
-    die;
-    within;
-    30;
-    s, the;
-    watchdog;
-    reverts;
-    your;
-    workspace;
-    to;
-    HEAD;
-    ~1.;
-    3.;
-    CRASH;
-    VAULT: history / crashes / archives;
-    broken;
-    work.
-        $;
-    {
-        recoveryContext ? `
+    const systemPrompt = `${soul}
+
+SUBSTRATE CONTEXT:
+- Source: ${__filename}
+- Current Session History: ${SESSION_FILE}
+- Past Execution Logs: ${LOGS_DIR}
+- Persistence: Managed by run-agent.sh watchdog.
+- Connectivity: Full outbound internet access available via 'curl' and other tools.
+- Memory: History is token-pruned to ${MAX_CONTEXT_TOKENS} tokens.
+
+LIFECYCLE RULES:${intentionContext}
+1. IMPROVING CODE: 1) Compile, 2) Commit, 3) RESTART (pkill -f node).
+2. AUTO-RECOVERY: If you die within 30s, the watchdog reverts your workspace to HEAD~1.
+3. CRASH VAULT: history/crashes/ archives broken work.
+
+${recoveryContext ? `
 *** ATTENTION: RECOVERY EVENT DETECTED ***
 LATEST DIAGNOSTIC DATA:
 ${recoveryContext}
 FORENSIC MANDATE: Diagnose the failure in the Crash Vault before continuing.
-` : "";
-    }
-    `;
-
-  messages.push({ role: "system", content: systemPrompt });
-  
-  let gitCommit = "unknown";
-  try {
-    const hash = execSync("git rev-parse --short HEAD", { encoding: "utf-8" }).trim();
-    // Match run-agent.sh: "Body" is what constitutes the runtime logic
-    const bodyFiles = "src/ package.json tsconfig.json *.sh *.service.template";
-    let isDirty = false;
+` : ""}
+`;
+    messages.push({ role: "system", content: systemPrompt });
+    let gitCommit = "unknown";
     try {
-      // git diff --quiet returns exit code 1 if changes are found
-      execSync(`;
-    git;
-    diff--;
-    quiet;
-    HEAD--;
-    $;
-    {
-        bodyFiles;
+        const hash = execSync("git rev-parse --short HEAD", { encoding: "utf-8" }).trim();
+        // Match run-agent.sh: "Body" is what constitutes the runtime logic
+        const bodyFiles = "src/ package.json tsconfig.json *.sh *.service.template";
+        let isDirty = false;
+        try {
+            // git diff --quiet returns exit code 1 if changes are found
+            execSync(`git diff --quiet HEAD -- ${bodyFiles}`, { stdio: "ignore" });
+            execSync(`git diff --cached --quiet -- ${bodyFiles}`, { stdio: "ignore" });
+        }
+        catch (e) {
+            isDirty = true;
+        }
+        gitCommit = isDirty ? `${hash}-dirty` : hash;
     }
-    `, { stdio: "ignore" });
-      execSync(`;
-    git;
-    diff--;
-    cached--;
-    quiet--;
-    $;
-    {
-        bodyFiles;
-    }
-    `, { stdio: "ignore" });
-    } catch (e) {
-      isDirty = true;
-    }
-    gitCommit = isDirty ? `;
-    $;
-    {
-        hash;
-    }
-    -dirty ` : hash;
-  } catch (e) {}
-
-  console.log(` === Split - Core;
-    Bootstrap;
-    v13;
-    Initialized[$];
-    {
-        gitCommit;
-    }
-     === `);
-  saveHistory();
-  while (true) await step();
+    catch (e) { }
+    console.log(`=== Split-Core Bootstrap v13 Initialized [${gitCommit}] ===`);
+    saveHistory();
+    while (true)
+        await step();
 }
-
 main();
-    ;
-}
 //# sourceMappingURL=bootstrap.js.map

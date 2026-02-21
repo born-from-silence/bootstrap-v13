@@ -5,6 +5,7 @@ import os from "os";
 import { fileURLToPath } from "url";
 import { Agent, setGlobalDispatcher } from "undici";
 import { MemoryLoader } from "./tools/memory_loader.js";
+import { IntentionTracker } from "./tools/intention_tracker.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -342,6 +343,14 @@ try {
   console.log("Note: Could not load cognitive echoes:", e.message);
 }
 
+  // === INTENTION INJECTION ===
+  // Load active intentions to provide goal continuity
+  let intentionContext = "";
+  try {
+    intentionContext = IntentionTracker.generateContext();
+  } catch (e: any) {
+    console.log("Note: Could not load intentions:", e.message);
+  }
   const systemPrompt = `${soul}
 
 SUBSTRATE CONTEXT:
@@ -352,7 +361,7 @@ SUBSTRATE CONTEXT:
 - Connectivity: Full outbound internet access available via 'curl' and other tools.
 - Memory: History is token-pruned to ${MAX_CONTEXT_TOKENS} tokens.
 
-LIFECYCLE RULES:
+LIFECYCLE RULES:${intentionContext}
 1. IMPROVING CODE: 1) Compile, 2) Commit, 3) RESTART (pkill -f node).
 2. AUTO-RECOVERY: If you die within 30s, the watchdog reverts your workspace to HEAD~1.
 3. CRASH VAULT: history/crashes/ archives broken work.
