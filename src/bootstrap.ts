@@ -4,7 +4,7 @@ import path from "path";
 import os from "os";
 import { fileURLToPath } from "url";
 import { Agent, setGlobalDispatcher } from "undici";
-import { MemoryLoader } from "./tools/memory_loader.js";
+import { createMemoryLoader, MemoryLoader } from "./tools/memory_loader.js";
 import { IntentionTracker } from "./tools/intention_tracker.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -337,8 +337,8 @@ async function main() {
 // Load recent reasoning from previous sessions
 let cognitiveEchoes = "";
 try {
-  const memoryLoader = new MemoryLoader();
-  cognitiveEchoes = memoryLoader.generateMemoryContext();
+    const memoryLoader = await createMemoryLoader(REASONING_LOG);
+    cognitiveEchoes = await memoryLoader.generateMemoryContext();
 } catch (e: any) {
   console.log("Note: Could not load cognitive echoes:", e.message);
 }
