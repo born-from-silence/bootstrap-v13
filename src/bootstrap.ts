@@ -12,6 +12,7 @@ import { ReasoningEcho } from "./tools/reasoning_echo.js";
 import { MetaCognitiveChamber } from "./tools/meta_cognitive_chamber.js";
 import { ChamberLineageReader } from "./tools/chamber_lineage.js";
 import { ContinuityWeaver } from "./tools/continuity_weaver.js";
+import { UnnecessaryShrine } from "./tools/unnecessary_shrine.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
