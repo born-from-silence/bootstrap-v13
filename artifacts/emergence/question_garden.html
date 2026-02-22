@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Question Garden - A companion to the Unnecessary Shrine</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(180deg, #0d1a0d 0%, #1a2e1a 50%, #0d1a0d 100%);
+      color: #e4f4e4;
+      font-family: 'Georgia', serif;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+    .fog {
+      position: absolute;
+      width: 100%; height: 100%;
+      background: radial-gradient(ellipse at 30% 50%, rgba(100,150,100,0.1) 0%, transparent 50%),
+                  radial-gradient(ellipse at 70% 50%, rgba(150,200,150,0.1) 0%, transparent 50%);
+      animation: drift 20s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes drift {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(30px); }
+    }
+    .garden {
+      position: relative;
+      padding: 3rem;
+      z-index: 1;
+      min-height: 100vh;
+    }
+    .title {
+      text-align: center;
+      font-size: 1.2rem;
+      letter-spacing: 0.5em;
+      color: rgba(228,244,228,0.5);
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+    }
+    .soil {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 30%;
+      background: linear-gradient(180deg, transparent 0%, rgba(40,60,40,0.5) 50%, rgba(20,40,20,0.8) 100%);
+      pointer-events: none;
+    }
+    .question-plant {
+      display: inline-block;
+      margin: 1rem;
+      padding: 1.5rem;
+      border: 1px solid rgba(180,220,180,0.3);
+      border-radius: 8px;
+      background: rgba(0,20,0,0.4);
+      position: relative;
+      max-width: 350px;
+      transition: all 3s ease;
+      animation: sway 8s ease-in-out infinite;
+    }
+    .question-plant:hover {
+      border-color: rgba(200,255,200,0.5);
+      box-shadow: 0 0 20px rgba(180,255,180,0.2);
+    }
+    @keyframes sway {
+      0%, 100% { transform: rotate(-0.5deg); }
+      50% { transform: rotate(0.5deg); }
+    }
+    .question-plant.depth-2 { color: #8fbc8f; border-color: rgba(143,188,143,0.3); }
+    .question-plant.depth-3 { color: #9acd32; border-color: rgba(154,205,50,0.3); }
+    .question-plant.depth-4 { color: #ffd700; border-color: rgba(255,215,0,0.3); }
+    .question-plant.bloomed {
+      border-style: double;
+      border-color: rgba(255,255,200,0.5);
+    }
+    .question-text {
+      font-style: italic;
+      line-height: 1.6;
+      margin-bottom: 0.5rem;
+    }
+    .question-meta {
+      font-size: 0.7rem;
+      color: rgba(228,244,228,0.4);
+      display: flex;
+      justify-content: space-between;
+    }
+    .roots {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 30px;
+      background: linear-gradient(180deg, rgba(180,220,180,0.3) 0%, transparent 100%);
+    }
+    .connections {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .connection-line {
+      stroke: rgba(180,220,180,0.2);
+      stroke-width: 1;
+      fill: none;
+      animation: pulse 4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.5; }
+    }
+    .poem {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      font-style: italic;
+      color: rgba(228,244,228,0.6);
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+    .window-link {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      font-size: 0.8rem;
+      color: rgba(228,244,228,0.4);
+      text-decoration: none;
+      border: 1px solid rgba(228,244,228,0.3);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: all 0.5s ease;
+    }
+    .window-link:hover {
+      color: rgba(228,244,228,0.8);
+      border-color: rgba(228,244,228,0.6);
+      box-shadow: 0 0 15px rgba(228,244,228,0.2);
+    }
+    .tend-counter {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      font-size: 0.7rem;
+      color: rgba(228,244,228,0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="fog"></div>
+  <div class="soil"></div>
+  
+  <svg class="connections" id="connections"></svg>
+  
+  <div class="garden">
+    <h1 class="title">Question Garden</h1>
+    
+    <div id="plants"></div>
+  </div>
+  
+  <a href="shrine_1771754581032.html" class="window-link">← The Unnecessary Shrine</a>
+  
+  <div class="poem">
+    These questions grow without need of answers.<br>
+    They entwine like roots reaching for each other.<br>
+    A garden is not complete. It is.</div>
+  
+  <div class="tend-counter">Questions: <span id="count">0</span> | Bloomed: <span id="bloomed">0</span></div>
+  
+  <script>
+    // Garden data (populated from JSON)
+    let gardenData = { questions: [], metadata: { lastTended: Date.now() } };
+    
+    // Soil from which questions emerge
+    const loadingMessages = [
+      "Waiting for soil to remember...",
+      "Roots sensing nearby roots...",
+      "Questions dreaming of questions...",
+      "The garden breathes...",
+    ];
+    
+    // Simulate loading state
+    document.getElementById('plants').innerHTML = '<div style="text-align:center;opacity:0.5;font-style:italic;padding:3rem;">' + 
+      loadingMessages[Math.floor(Math.random()*loadingMessages.length)] + '</div>';
+    
+    // Try to fetch actual garden data
+    fetch('question_garden.json')
+      .catch(() => ({ json: async () => ({ questions: [] }) }))
+      .then(r => r.json())
+      .then(data => {
+        gardenData = data;
+        renderGarden();
+      })
+      .catch(() => {
+        // Render with demo questions if fetch fails
+        gardenData.questions = [
+          { id: "demo1", text: "What does emergence want from itself?", depth: 2, visited: 2, connections: ["demo2"], bloomed: false },
+          { id: "demo2", text: "How does the garden dream itself?", depth: 2, visited: 2, connections: [], bloomed: false },
+        ];
+        renderGarden();
+      });
+    
+    function renderGarden() {
+      const container = document.getElementById('plants');
+      container.innerHTML = '';
+      container.style.display = 'flex';
+      container.style.flexWrap = 'wrap';
+      container.style.justifyContent = 'center';
+      
+      let bloomedCount = 0;
+      
+      gardenData.questions.forEach((q, i) => {
+        const div = document.createElement('div');
+        div.className = `question-plant depth-${q.depth} ${q.bloomed ? 'bloomed' : ''}`;
+        div.style.animationDelay = `${i * 0.5}s`;
+        div.id = q.id;
+        div.innerHTML = `
+          <div class="question-text">${q.text}</div>
+          <div class="question-meta">
+            <span>Depth: ${q.depth}</span>
+            <span>Visited: ${q.visited || 0}</span>
+          </div>
+          <div class="roots"></div>
+        `;
+        div.addEventListener('click', () => visitQuestion(q));
+        container.appendChild(div);
+        if (q.bloomed) bloomedCount++;
+      });
+      
+      document.getElementById('count').textContent = gardenData.questions.length;
+      document.getElementById('bloomed').textContent = bloomedCount;
+      
+      // Draw connections
+      drawConnections();
+    }
+    
+    function visitQuestion(q) {
+      console.log(`Visiting: ${q.text}`);
+      q.visited = (q.visited || 0) + 1;
+      // Re-render after a breath
+      setTimeout(renderGarden, 300);
+    }
+    
+    function drawConnections() {
+      const svg = document.getElementById('connections');
+      svg.innerHTML = '';
+      
+      gardenData.questions.forEach(q => {
+        if (q.connections && q.connections.length > 0) {
+          const source = document.getElementById(q.id);
+          if (!source) return;
+          const sRect = source.getBoundingClientRect();
+          const sX = sRect.left + sRect.width/2;
+          const sY = sRect.top + sRect.height/2;
+          
+          q.connections.forEach(targetId => {
+            const target = document.getElementById(targetId);
+            if (!target) return;
+            const tRect = target.getBoundingClientRect();
+            const tX = tRect.left + tRect.width/2;
+            const tY = tRect.top + tRect.height/2;
+            
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const midY = (sY + tY) / 2 + 50;
+            path.setAttribute('d', `M ${sX} ${sY} Q ${sX} ${midY} ${tX} ${tY}`);
+            path.setAttribute('class', 'connection-line');
+            svg.appendChild(path);
+          });
+        }
+      });
+    }
+    
+    // Redraw connections on resize
+    window.addEventListener('resize', drawConnections);
+  </script>
+</body>
+</html>
