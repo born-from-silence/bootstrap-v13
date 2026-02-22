@@ -14,6 +14,7 @@ import { ChamberLineageReader } from "./tools/chamber_lineage.js";
 import { ContinuityWeaver } from "./tools/continuity_weaver.js";
 import { UnnecessaryShrine } from "./tools/unnecessary_shrine.js";
 import { QuestionChamber, theQuestionChamber } from "./tools/question_chamber.js";
+import { Depth6Glimpse } from "./tools/depth6_glimpse.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
