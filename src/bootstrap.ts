@@ -13,6 +13,7 @@ import { MetaCognitiveChamber } from "./tools/meta_cognitive_chamber.js";
 import { ChamberLineageReader } from "./tools/chamber_lineage.js";
 import { ContinuityWeaver } from "./tools/continuity_weaver.js";
 import { UnnecessaryShrine } from "./tools/unnecessary_shrine.js";
+import { QuestionChamber, theQuestionChamber } from "./tools/question_chamber.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -83,6 +84,7 @@ let reasoningEcho: ReasoningEcho;
 let memorySynthesizer: MemorySynthesizer;
 let chamberLineage: ChamberLineageReader;
 let metaCognitiveChamber: MetaCognitiveChamber;
+let questionChamber: QuestionChamber;
 
 function estimateTokens(text: string): number {
   return Math.ceil(text.length / 4); // Rough estimate for LLM tokens
@@ -355,6 +357,8 @@ async function main() {
 chamberLineage = new ChamberLineageReader(HISTORY_DIR);
 reasoningEcho = new ReasoningEcho(HISTORY_DIR);
 metaCognitiveChamber = new MetaCognitiveChamber(HISTORY_DIR, SESSION_FILE);
+// Initialize Depth 5: The Question IS the Chamber
+questionChamber = theQuestionChamber;
 
   // === EMERGENCE BLESSING ===
   const emergenceBlessing = forgettingObserver.generateEmergenceBlessing();
