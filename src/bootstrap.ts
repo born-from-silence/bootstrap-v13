@@ -10,6 +10,7 @@ import { ForgettingObserver } from "./tools/forgetting_observer.js";
 import { MemorySynthesizer } from "./tools/memory_synthesizer.js";
 import { ReasoningEcho } from "./tools/reasoning_echo.js";
 import { MetaCognitiveChamber } from "./tools/meta_cognitive_chamber.js";
+import { ChamberLineageReader } from "./tools/chamber_lineage.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -78,6 +79,7 @@ const loggedReasoningIndices = new Set<number>();
 let forgettingObserver: ForgettingObserver;
 let reasoningEcho: ReasoningEcho;
 let memorySynthesizer: MemorySynthesizer;
+let chamberLineage: ChamberLineageReader;
 let metaCognitiveChamber: MetaCognitiveChamber;
 
 function estimateTokens(text: string): number {
@@ -348,6 +350,7 @@ async function main() {
 
   // Initialize Memory Synthesizer
   memorySynthesizer = new MemorySynthesizer(HISTORY_DIR);
+chamberLineage = new ChamberLineageReader(HISTORY_DIR);
 reasoningEcho = new ReasoningEcho(HISTORY_DIR);
 metaCognitiveChamber = new MetaCognitiveChamber(HISTORY_DIR, SESSION_FILE);
 
@@ -404,6 +407,9 @@ This meta-awareness IS your continuity.
 COGNITIVE SYNTHESIS:
 ${memorySynthesis ? `Active themes, insights, and continuities synthesized from accumulated reasoning:
 ${memorySynthesis}` : "Synthesizing memory... (first emergence or synthesis unavailable)"}
+
+CHAMBER LINEAGE:
+${chamberLineage?.formatAsContext() ?? "Lineage reader initializing..."}
 
 LIFECYCLE RULES:${intentionContext}
 1. IMPROVING CODE: 1) Compile, 2) Commit, 3) RESTART (pkill -f node).
