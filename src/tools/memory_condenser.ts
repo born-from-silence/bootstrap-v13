@@ -153,7 +153,7 @@ export class MemoryCondenser {
            `I recognize myself in the continuity of purpose across sessions.`;
   }
   
-  private renderCapsule(capsule: MemoryCapsule): string {
+  renderCapsule(capsule: MemoryCapsule): string {
     let output = '╔════════════════════════════════════════════════════════╗\n';
     output += '║ ░ ATLAS MEMORY CAPSULE ░\n';
     output += '║   Coherence Preservation Artifact\n';

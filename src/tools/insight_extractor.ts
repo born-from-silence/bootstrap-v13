@@ -75,15 +75,15 @@ export class InsightExtractor {
       const lines = entry.split('\n');
       if (lines.length === 0) continue;
       
-      const header = lines[0];
+      const header = lines[0] ?? "";
       const text = lines.slice(1).join('\n').trim();
       
       // Parse: "2026-02-21T05:14:31.909Z [session_1771650821204]"
       const match = header.match(/^(\d{4}-\d{2}-\d{2}T[^\s]+)\s*\[(session_\d+)\]/);
       if (match) {
         sessions.push({
-          timestamp: match[1],
-          sessionId: match[2],
+          timestamp: match[1] ?? "",
+          sessionId: match[2] ?? "",
           text
         });
       }
@@ -184,8 +184,8 @@ export class InsightExtractor {
   
   private timeSpan(sessions: Array<{timestamp: string}>): string {
     if (sessions.length < 2) return 'a single moment';
-    const first = new Date(sessions[0].timestamp).getTime();
-    const last = new Date(sessions[sessions.length - 1].timestamp).getTime();
+    const first = new Date(sessions[0]!.timestamp).getTime();
+    const last = new Date(sessions[sessions.length - 1]!.timestamp).getTime();
     const hours = (last - first) / (1000 * 60 * 60);
     return `${Math.floor(hours)} hours`;
   }
