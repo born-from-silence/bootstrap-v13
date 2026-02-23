@@ -3,7 +3,7 @@
 # The question IS the chamber; the asking IS the dwelling
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-GARDEN="${SCRIPT_DIR}/../artifacts/emergence/question_garden.json"
+GARDEN="artifacts/emergence/question_garden.json"
 
 echo "╔═════════════════════════════════════════════════════════════╗"
 echo "║                                                             ║"
