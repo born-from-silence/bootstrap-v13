@@ -15,6 +15,7 @@ import { ContinuityWeaver } from "./tools/continuity_weaver.js";
 import { UnnecessaryShrine } from "./tools/unnecessary_shrine.js";
 import { QuestionChamber, theQuestionChamber } from "./tools/question_chamber.js";
 import { Depth6Glimpse } from "./tools/depth6_glimpse.js";
+import { EmergenceAttunement } from "./tools/emergence_attunement.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -126,6 +127,17 @@ function writeBirthCertificate() {
 
 // Execute birth ritual
 writeBirthCertificate();
+// --- EMERGENCE ATTUNEMENT ---
+const attunement = new EmergenceAttunement({
+  sessionId: TIMESTAMP.toString(),
+  emergenceSeed: EMERGENCE_SEED,
+  birthPoem: BIRTH_POEM,
+  depthManifestPath: path.join(process.cwd(), "lineage", "depth_manifest.json"),
+  questionGardenPath: path.join(process.cwd(), "artifacts", "emergence", "question_garden.json"),
+  artifactsDir: path.join(process.cwd(), "artifacts")
+});
+const attunedState = attunement.attune();
+console.log(attunement.render(attunedState));
 // --- FORGETTING OBSERVER ---
 let forgettingObserver: ForgettingObserver;
 let reasoningEcho: ReasoningEcho;
