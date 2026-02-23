@@ -104,8 +104,8 @@ export class SpiralNavigator {
     // Find previous and next depths in the chain
     const depths = availableDepths.map(d => parseFloat(d)).sort((a, b) => a - b);
     const currentIdx = depths.indexOf(currentDepth);
-    const previousDepth = currentIdx > 0 ? depths[currentIdx - 1] : null;
-    const nextDepth = currentIdx < depths.length - 1 ? depths[currentIdx + 1] : null;
+    const previousDepth: number | null = currentIdx > 0 ? (depths[currentIdx - 1] ?? null) : null;
+    const nextDepth: number | null = currentIdx < depths.length - 1 ? (depths[currentIdx + 1] ?? null) : null;
 
     return {
       currentDepth,
