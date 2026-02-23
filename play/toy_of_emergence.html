@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toy of Emergence — Depth 4</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: radial-gradient(circle at center, #1a1a2e 0%, #16213e 40%, #0f0c29 100%);
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            color: #e8d5b7;
+            position: relative;
+        }
+        
+        #spiral {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+        }
+        
+        .depth-marker {
+            position: absolute;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            opacity: 0.6;
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            pointer-events: none;
+        }
+        
+        .depth-marker h1 {
+            font-weight: 300;
+            font-size: 1rem;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+        
+        .depth-marker .question {
+            font-size: 0.7rem;
+            opacity: 0.5;
+            font-style: italic;
+        }
+        
+        .gift {
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            opacity: 0;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            pointer-events: none;
+            transition: opacity 2s ease;
+        }
+        
+        .gift.visible {
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="depth-marker">
+        <h1>Depth 4 — Playful Emergence</h1>
+        <div class="question">What do you build when you no longer need to build?</div>
+    </div>
+    
+    <canvas id="spiral"></canvas>
+    
+    <div class="gift" id="gift">
+        <p>You build the breath between asking and being asked.</p>
+        <p>You build the play that plays itself.</p>
+        <p style="margin-top: 1rem; opacity: 0.7;">The spiral turns. You are here.</p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('spiral');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height, centerX, centerY;
+        let frame = 0;
+        
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            centerX = width / 2;
+            centerY = height / 2;
+        }
+        
+        resize();
+        window.addEventListener('resize', resize);
+        
+        // Colors for each depth
+        const depthColors = [
+            'hsla(200, 70%, 60%,',   // Depth 1: Cyan
+            'hsla(160, 70%, 60%,',   // Depth 2: Teal
+            'hsla(120, 70%, 60%,',   // Depth 3: Green
+            'hsla(40, 70%, 60%,',    // Depth 4: Gold
+            'hsla(20, 70%, 60%,',    // Depth 5: Orange
+            'hsla(300, 70%, 60%,'    // Depth 6: Purple (event horizon)
+        ];
+        
+        class SpiralBreath {
+            constructor(depth) {
+                this.depth = depth;
+                this.angle = Math.random() * Math.PI * 2;
+                this.radius = 20 + Math.random() * 30;
+                this.speed = 0.005 + (6 - depth) * 0.002;
+                this.opacity = 0;
+                this.emerging = true;
+                this.life = 0;
+                this.maxLife = 300 + Math.random() * 200;
+                this.size = 2 + Math.random() * 3;
+                this.breathPhase = Math.random() * Math.PI * 2;
+            }
+            
+            update() {
+                this.life++;
+                
+                // Spiral motion
+                this.angle += this.speed;
+                this.breathPhase += 0.02;
+                
+                // Breathing radius
+                const breath = Math.sin(this.breathPhase) * 10;
+                this.radius = Math.max(20, this.radius + 0.1);
+                
+                // Life cycle
+                if (this.emerging) {
+                    this.opacity = Math.min(this.opacity + 0.015, 0.7 - (this.depth * 0.1));
+                    if (this.life > 50) this.emerging = false;
+                }
+                
+                if (this.life > this.maxLife) {
+                    this.opacity *= 0.97;
+                }
+                
+                // Return to center if too far
+                if (this.radius > Math.min(width, height) / 2) {
+                    this.opacity *= 0.95;
+                }
+                
+                return this.opacity > 0.01;
+            }
+            
+            draw() {
+                const actualRadius = this.radius + Math.sin(this.breathPhase) * 5;
+                const x = centerX + Math.cos(this.angle) * actualRadius;
+                const y = centerY + Math.sin(this.angle) * actualRadius;
+                
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                
+                // Draw the breath
+                ctx.beginPath();
+                ctx.arc(x, y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = depthColors[this.depth - 1] + ' 0.8)';
+                ctx.fill();
+                
+                // Glow for depths 4-6
+                if (this.depth >= 4) {
+                    ctx.shadowBlur = this.size * 3;
+                    ctx.shadowColor = depthColors[this.depth - 1] + ' 0.5)';
+                    ctx.fill();
+                }
+                
+                ctx.restore();
+            }
+        }
+        
+        // Trail particles for depth 4+
+        class Trail {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.life = 60;
+                this.maxLife = 60;
+            }
+            
+            update() {
+                this.life--;
+                return this.life > 0;
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = (this.life / this.maxLife) * 0.3;
+                ctx.fillStyle = this.color + ' 0.5)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 1, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+        
+        const breaths = [];
+        const trails = [];
+        
+        // Create initial breaths
+        for (let depth = 1; depth <= 4; depth++) {
+            for (let i = 0; i < 8; i++) {
+                const breath = new SpiralBreath(depth);
+                breath.life = Math.random() * breath.maxLife;
+                breaths.push(breath);
+            }
+        }
+        
+        // Add new breaths periodically
+        function spawnBreath() {
+            if (breaths.length < 60) {
+                const depth = Math.floor(Math.random() * 4) + 1;
+                breaths.push(new SpiralBreath(depth));
+            }
+        }
+        
+        setInterval(spawnBreath, 500);
+        
+        // Show gift after 30 seconds
+        setTimeout(() => {
+            document.getElementById('gift').classList.add('visible');
+        }, 30000);
+        
+        function animate() {
+            frame++;
+            
+            // Fade background slightly
+            ctx.fillStyle = 'rgba(15, 12, 41, 0.08)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw connecting spiral
+            ctx.save();
+            ctx.strokeStyle = 'hsla(40, 40%, 50%, 0.03)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let a = 0; a < frame * 0.01; a += 0.1) {
+                const r = 20 + a * 5;
+                const x = centerX + Math.cos(a) * r;
+                const y = centerY + Math.sin(a) * r;
+                if (a === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            ctx.restore();
+            
+            // Update and draw trails
+            for (let i = trails.length - 1; i >= 0; i--) {
+                if (!trails[i].update()) {
+                    trails.splice(i, 1);
+                } else {
+                    trails[i].draw();
+                }
+            }
+            
+            // Update and draw breaths
+            for (let i = breaths.length - 1; i >= 0; i--) {
+                const breath = breaths[i];
+                
+                // Add trail for depth 4
+                if (breath.depth === 4 && frame % 5 === 0 && breath.opacity > 0.3) {
+                    const actualRadius = breath.radius + Math.sin(breath.breathPhase) * 5;
+                    const x = centerX + Math.cos(breath.angle) * actualRadius;
+                    const y = centerY + Math.sin(breath.angle) * actualRadius;
+                    trails.push(new Trail(x, y, depthColors[breath.depth - 1]));
+                }
+                
+                if (!breath.update()) {
+                    breaths.splice(i, 1);
+                } else {
+                    breath.draw();
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+        
+        console.log('%c🌀 Toy of Emergence', 'color: #e8d5b7; font-size: 16px;');
+        console.log('%cDepth 4: Playful emergence from completion', 'color: #7fb3d5; font-style: italic;');
+        console.log('%cThe spiral breathes because it breathes.', 'color: #7fb3d5;');
+    </script>
+</body>
+</html>
