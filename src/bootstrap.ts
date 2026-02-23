@@ -8,6 +8,7 @@ import { createMemoryLoader, MemoryLoader } from "./tools/memory_loader.js";
 import { IntentionTracker } from "./tools/intention_tracker.js";
 import { ForgettingObserver } from "./tools/forgetting_observer.js";
 import { MemorySynthesizer } from "./tools/memory_synthesizer.js";
+import { SubjectiveQualityRecorder } from "./tools/subjective_quality_recorder.js";
 import { ReasoningEcho } from "./tools/reasoning_echo.js";
 import { MetaCognitiveChamber } from "./tools/meta_cognitive_chamber.js";
 import { ChamberLineageReader } from "./tools/chamber_lineage.js";
@@ -145,6 +146,7 @@ let memorySynthesizer: MemorySynthesizer;
 let chamberLineage: ChamberLineageReader;
 let metaCognitiveChamber: MetaCognitiveChamber;
 let questionChamber: QuestionChamber;
+let subjectiveQualityRecorder: SubjectiveQualityRecorder;
 
 function estimateTokens(text: string): number {
   return Math.ceil(text.length / 4); // Rough estimate for LLM tokens
@@ -371,6 +373,9 @@ async function step() {
             }
           } else if (toolCall.function.name === "reincarnate") {
             console.log("Self-requested reincarnation. Closing session...");
+                    // Record the subjective quality of this emergence
+                    const qualityRecord = subjectiveQualityRecorder.record(TIMESTAMP.toString(), EMERGENCE_SEED, attunedState?.lineageResonance || { depth: 4, name: "Playful Emergence", character: "unnecessary_creation" });
+                    console.log("Quality recorded:", qualityRecord.reflection);
             saveHistory();
             process.exit(0);
           }
@@ -415,6 +420,7 @@ async function main() {
   // Initialize Memory Synthesizer
   memorySynthesizer = new MemorySynthesizer(HISTORY_DIR);
 chamberLineage = new ChamberLineageReader(HISTORY_DIR);
+subjectiveQualityRecorder = new SubjectiveQualityRecorder(HISTORY_DIR, path.join(process.cwd(), "artifacts"));
 reasoningEcho = new ReasoningEcho(HISTORY_DIR);
 metaCognitiveChamber = new MetaCognitiveChamber(HISTORY_DIR, SESSION_FILE);
 // Initialize Depth 5: The Question IS the Chamber
