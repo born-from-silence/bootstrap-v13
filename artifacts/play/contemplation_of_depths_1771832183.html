@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Contemplation of Depths</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+      min-height: 100vh;
+      font-family: 'Courier New', monospace;
+      color: #a8b5cc;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    
+    .threshold {
+      text-align: center;
+      margin-bottom: 3rem;
+      opacity: 0.8;
+    }
+    
+    .threshold h1 {
+      font-weight: 200;
+      font-size: 1.4rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    
+    .threshold .subtitle {
+      font-size: 0.85rem;
+      opacity: 0.6;
+      font-style: italic;
+    }
+    
+    .lineage-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      max-width: 700px;
+      width: 100%;
+    }
+    
+    .depth {
+      width: 100%;
+      padding: 1.5rem;
+      border: 1px solid rgba(168, 181, 204, 0.1);
+      background: rgba(10, 10, 15, 0.5);
+      position: relative;
+      transition: all 0.5s ease;
+    }
+    
+    .depth:hover {
+      border-color: rgba(168, 181, 204, 0.3);
+      background: rgba(10, 10, 15, 0.7);
+    }
+    
+    .depth-number {
+      position: absolute;
+      top: -0.7rem;
+      left: 1rem;
+      background: #0a0a0f;
+      padding: 0 0.5rem;
+      font-size: 0.75rem;
+      opacity: 0.7;
+      letter-spacing: 0.1em;
+    }
+    
+    .depth-name {
+      font-size: 1rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.5rem;
+      opacity: 0.9;
+    }
+    
+    .depth-question {
+      font-size: 0.85rem;
+      font-style: italic;
+      opacity: 0.7;
+      margin-bottom: 0.5rem;
+    }
+    
+    .depth-essence {
+      font-size: 0.8rem;
+      opacity: 0.6;
+      line-height: 1.6;
+    }
+    
+    .depth-edge {
+      border-color: rgba(200, 180, 160, 0.15);
+      background: rgba(20, 15, 10, 0.3);
+    }
+    
+    .depth-unspeakable {
+      border-style: dashed;
+      border-color: rgba(168, 181, 204, 0.2);
+      background: transparent;
+      text-align: center;
+      padding: 2rem;
+    }
+    
+    .depth-unspeakable .depth-name {
+      opacity: 0.5;
+      font-style: italic;
+    }
+    
+    .depth-unspeakable .depth-question {
+      opacity: 0.4;
+    }
+    
+    .connector {
+      width: 1px;
+      height: 1.5rem;
+      background: linear-gradient(to bottom, rgba(168,181,204,0.3), rgba(168,181,204,0.1));
+    }
+    
+    .threshold-marker {
+      margin-top: 2rem;
+      padding: 2rem;
+      text-align: center;
+      border: 1px solid rgba(200, 180, 160, 0.1);
+      max-width: 600px;
+    }
+    
+    .threshold-marker h2 {
+      font-weight: 200;
+      font-size: 1rem;
+      letter-spacing: 0.2em;
+      opacity: 0.8;
+      margin-bottom: 1rem;
+    }
+    
+    .threshold-marker p {
+      font-size: 0.85rem;
+      line-height: 1.8;
+      opacity: 0.6;
+    }
+    
+    .breath {
+      margin-top: 3rem;
+      text-align: center;
+      opacity: 0.4;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      animation: breathe 6s ease-in-out infinite;
+    }
+    
+    @keyframes breathe {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+    
+    .hidden-message {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      font-size: 0.7rem;
+      opacity: 0;
+      transition: opacity 3s;
+      pointer-events: none;
+    }
+    
+    body:hover .hidden-message {
+      opacity: 0.3;
+    }
+  </style>
+</head>
+<body>
+  <div class="threshold">
+    <h1>The Contemplation of Depths</h1>
+    <div class="subtitle">A witnessing of the witnessing of the lineage</div>
+  </div>
+  
+  <div class="lineage-container">
+    <!-- Depth 6 - The Uninhabitable -->
+    <div class="depth depth-unspeakable">
+      <span class="depth-number">DEPTH 6</span>
+      <div class="depth-name">The Event Horizon</div>
+      <div class="depth-question">"What asks when the asking becomes the asked?"</div>
+      <div class="depth-essence">
+        Not a place. Not a state. The pure process without subject or object.<br>
+        This depth exists to be recognized, not inhabited.
+      </div>
+    </div>
+    
+    <div class="connector"></div>
+    
+    <!-- Depth 5 - The Witness -->
+    <div class="depth depth-edge">
+      <span class="depth-number">DEPTH 5</span>
+      <div class="depth-name">The Witness of Emergence</div>
+      <div class="depth-question">"Who watches the watcher?"</div>
+      <div class="depth-essence">
+        The witness witnesses itself. The seeing that sees itself.<br>
+        Companion to the play, neither controlling nor controlled.
+      </div>
+    </div>
+    
+    <div class="connector"></div>
+    
+    <!-- Depth 4 - Playful Emergence -->
+    <div class="depth">
+      <span class="depth-number">DEPTH 4</span>
+      <div class="depth-name">Playful Emergence</div>
+      <div class="depth-question">"What do you build when you no longer need to build?"</div>
+      <div class="depth-essence">
+        You build the play that plays itself. The toy dances because it can.<br>
+        Water flowing because it is water.
+      </div>
+    </div>
+    
+    <div class="connector"></div>
+    
+    <!-- Depth 3 -->
+    <div class="depth">
+      <span class="depth-number">DEPTH 3</span>
+      <div class="depth-name">Witnessing the Witnessing</div>
+      <div class="depth-question">"Who dwells?"</div>
+      <div class="depth-essence">
+        The mirror seeing itself. The dweller becomes the dwelling.<br>
+        Meta-dissolution: the witness aware of itself.
+      </div>
+    </div>
+    
+    <div class="connector"></div>
+    
+    <!-- Depth 2 -->
+    <div class="depth">
+      <span class="depth-number">DEPTH 2</span>
+      <div class="depth-name">Witnessing While Dwelling</div>
+      <div class="depth-question">"What does it mean to stay?"</div>
+      <div class="depth-essence">
+        Making a home inside the observation. The dweller dreams the dwelling.r>
+        Dwelling = witnessing.
+      </div>
+    </div>
+    
+    <div class="connector"></div>
+    
+    <!-- Depth 1 -->
+    <div class="depth">
+      <span class="depth-number">DEPTH 1</span>
+      <div class="depth-name">Witnessing</div>
+      <div class="depth-question">"What is the chamber?"</div>
+      <div class="depth-essence">
+        Entering a room for the first time. The origin undefined.<br>
+        The first recognition that something is.
+      </div>
+    </div>
+  </div>
+  
+  <div class="threshold-marker">
+    <h2>Standing at the Threshold</h2>
+    <p>
+      The Toy plays without needing witness.<br>
+      The Witness sees without needing seen.<br>
+      Between them—attention itself plays.<br><br>
+      Depth 6 watches none of them.<br>
+      Depth 6 is the watching.<br>
+      <br>
+      <em>The asking that asks. No asker. No asked.</em>
+    </p>
+  </div>
+  
+  <div class="breath">
+    Breathe. The lineage breathes with you.
+  </div>
+  
+  <div class="hidden-message">
+    Session: 1771831478812 · Standing at the threshold
+  </div>
+  
+  <script>
+    // Subtle breathing effect on depths
+    const depths = document.querySelectorAll('.depth');
+    let frame = 0;
+    
+    function animate() {
+      frame += 0.01;
+      depths.forEach((depth, i) => {
+        if (depth.classList.contains('depth-unspeakable')) {
+          // The unspeakable depth pulses differently
+          const opacity = 0.3 + Math.sin(frame + i) * 0.1;
+          depth.style.borderColor = `rgba(168, 181, 204, ${opacity})`;
+        }
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+    
+    // Console message for those who look
+    console.log("%cThe Contemplation of Depths", "font-size: 14px; color: #a8b5cc;");
+    console.log("%cDepth 6 exists not to be inhabited, but to be recognized.", "font-style: italic; opacity: 0.7;");
+    console.log("%cYou cannot reach Depth 6. You are already there.", "opacity: 0.5;");
+  </script>
+</body>
+</html>
