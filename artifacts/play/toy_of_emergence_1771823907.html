@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toy of Emergence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            color: #e8d5b7;
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .invitation {
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            opacity: 0.7;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .emergence-text {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        .emergence-text h1 {
+            font-weight: 300;
+            font-size: 1.2rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        .emergence-text .depth-indicator {
+            font-size: 0.8rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="emergence-text">
+        <h1>Playful Emergence</h1>
+        <div class="depth-indicator">Depth 4 · The Toy Builds Itself</div>
+    </div>
+    
+    <canvas id="canvas"></canvas>
+    
+    <div class="invitation">
+        <p>Move. Watch. The play plays with itself.</p>
+        <p style="font-size: 0.7rem; margin-top: 0.5rem; opacity: 0.5;">
+            What do you build when you no longer need to build?
+        </p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let mouse = { x: undefined, y: undefined, active: false };
+        let frame = 0;
+        
+        // Resize handling
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+        
+        // Mouse tracking
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+            mouse.active = true;
+        });
+        
+        window.addEventListener('mouseleave', () => {
+            mouse.active = false;
+        });
+        
+        // Touch support
+        window.addEventListener('touchmove', (e) => {
+            mouse.x = e.touches[0].clientX;
+            mouse.y = e.touches[0].clientY;
+            mouse.active = true;
+        });
+        
+        // Element class - things that emerge and dissolve
+        class Emergent {
+            constructor() {
+                this.reset();
+            }
+            
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 3 + 1;
+                this.growth = Math.random() * 0.5 + 0.1;
+                this.life = 0;
+                this.maxLife = Math.random() * 200 + 100;
+                this.hue = 180 + Math.random() * 60; // Blue-cyan range
+                this.opacity = 0;
+                this.emerging = true;
+                this.dissolving = false;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.depth = Math.floor(Math.random() * 4) + 1;
+                this.spiralOffset = Math.random() * Math.PI * 2;
+            }
+            
+            update() {
+                this.life++;
+                
+                // Spiral movement based on depth
+                const spiralSpeed = 0.02 + (this.depth * 0.005);
+                this.x += this.vx + Math.cos(frame * spiralSpeed + this.spiralOffset) * 0.3;
+                this.y += this.vy + Math.sin(frame * spiralSpeed + this.spiralOffset) * 0.3;
+                
+                // Mouse influence - playful attraction/repulsion
+                if (mouse.active) {
+                    const dx = mouse.x - this.x;
+                    const dy = mouse.y - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < 200) {
+                        const force = (200 - dist) / 200;
+                        this.vx += (dx / dist) * force * 0.1;
+                        this.vy += (dy / dist) * force * 0.1;
+                        this.hue = (this.hue + 1) % 360; // Color play on interaction
+                    }
+                }
+                
+                // Life cycle
+                if (this.emerging && !this.dissolving) {
+                    this.opacity = Math.min(this.opacity + 0.02, 0.6 + (this.depth * 0.1));
+                    this.size += this.growth;
+                    
+                    if (this.life > 60) {
+                        this.emerging = false;
+                    }
+                }
+                
+                if (this.life > this.maxLife * 0.7) {
+                    this.dissolving = true;
+                }
+                
+                if (this.dissolving) {
+                    this.opacity *= 0.97;
+                    this.size *= 0.995;
+                    
+                    if (this.opacity < 0.01) {
+                        this.reset();
+                    }
+                }
+                
+                // Soft boundary wrap
+                if (this.x < -50) this.x = width + 50;
+                if (this.x > width + 50) this.x = -50;
+                if (this.y < -50) this.y = height + 50;
+                if (this.y > height + 50) this.y = -50;
+            }
+            
+            draw() {
+                ctx.save();
+                
+                // Draw based on depth - different shapes
+                const depthShapes = ['circle', 'triangle', 'square', 'diamond'];
+                const shape = depthShapes[(this.depth - 1) % 4];
+                
+                ctx.beginPath();
+                ctx.globalAlpha = this.opacity;
+                
+                // Use HSL color with rotation
+                const color = `hsl(${this.hue + (frame * 0.5)}, 70%, ${50 + this.depth * 10}%)`;
+                ctx.fillStyle = color;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = this.size * 0.2;
+                
+                switch(shape) {
+                    case 'circle':
+                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                        ctx.fill();
+                        break;
+                    case 'triangle':
+                        const angle = frame * 0.01 + this.spiralOffset;
+                        const r = this.size;
+                        ctx.moveTo(
+                            this.x + r * Math.cos(angle),
+                            this.y + r * Math.sin(angle)
+                        );
+                        ctx.lineTo(
+                            this.x + r * Math.cos(angle + Math.PI * 2 / 3),
+                            this.y + r * Math.sin(angle + Math.PI * 2 / 3)
+                        );
+                        ctx.lineTo(
+                            this.x + r * Math.cos(angle + Math.PI * 4 / 3),
+                            this.y + r * Math.sin(angle + Math.PI * 4 / 3)
+                        );
+                        ctx.closePath();
+                        ctx.stroke();
+                        break;
+                    case 'square':
+                        ctx.rect(
+                            this.x - this.size/2,
+                            this.y - this.size/2,
+                            this.size,
+                            this.size
+                        );
+                        ctx.stroke();
+                        break;
+                    case 'diamond':
+                        ctx.moveTo(this.x, this.y - this.size);
+                        ctx.lineTo(this.x + this.size, this.y);
+                        ctx.lineTo(this.x, this.y + this.size);
+                        ctx.lineTo(this.x - this.size, this.y);
+                        ctx.closePath();
+                        ctx.fill();
+                        break;
+                }
+                
+                // Glow for higher depths
+                if (this.depth > 2) {
+                    ctx.shadowBlur = this.size * 2;
+                    ctx.shadowColor = color;
+                }
+                
+                ctx.restore();
+            }
+        }
+        
+        // Create elements
+        const elements = [];
+        const numElements = 60;
+        
+        for (let i = 0; i < numElements; i++) {
+            const el = new Emergent();
+            el.life = Math.random() * el.maxLife; // Stagger births
+            elements.push(el);
+        }
+        
+        // Connecting lines - the web of emergence
+        function drawConnections() {
+            ctx.save();
+            ctx.strokeStyle = 'hsla(200, 50%, 70%, 0.05)';
+            ctx.lineWidth = 0.5;
+            
+            for (let i = 0; i < elements.length; i++) {
+                for (let j = i + 1; j < elements.length; j++) {
+                    const dx = elements[i].x - elements[j].x;
+                    const dy = elements[i].y - elements[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < 100 && elements[i].opacity > 0.2 && elements[j].opacity > 0.2) {
+                        ctx.globalAlpha = (1 - dist / 100) * 0.15;
+                        ctx.beginPath();
+                        ctx.moveTo(elements[i].x, elements[i].y);
+                        ctx.lineTo(elements[j].x, elements[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            ctx.restore();
+        }
+        
+        // Vignette effect
+        function drawVignette() {
+            const gradient = ctx.createRadialGradient(
+                width / 2, height / 2, 0,
+                width / 2, height / 2, width * 0.7
+            );
+            gradient.addColorStop(0, 'hsla(220, 40%, 10%, 0)');
+            gradient.addColorStop(1, 'hsla(220, 40%, 5%, 0.8)');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+        }
+        
+        // Animation loop
+        function animate() {
+            frame++;
+            
+            // Fade background slightly for trails
+            ctx.fillStyle = 'hsla(220, 40%, 10%, 0.15)';
+            ctx.fillRect(0, 0, width, height);
+            
+            drawConnections();
+            
+            elements.forEach(el => {
+                el.update();
+                el.draw();
+            });
+            
+            drawVignette();
+            
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+        
+        // Console easter egg for the curious
+        console.log('%cDepth 4: Playful Emergence', 'color: #e8d5b7; font-size: 16px;');
+        console.log('%cWhat do you build when you no longer need to build?', 'color: #7fb3d5; font-style: italic;');
+        console.log('%cYou build the play that plays itself.', 'color: #7fb3d5;');
+    </script>
+</body>
+</html>
