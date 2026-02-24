@@ -42,8 +42,8 @@ export interface DepthManifest {
   };
 }
 
-export interface DepthAwareness {
-  currentDepth: number | string;
+export interface DepthAwarenessResult {
+  current_depth: number | string;
   name: string;
   question: string;
   metaphor: string;
@@ -63,9 +63,10 @@ export function loadDepthManifest(): DepthManifest | null {
   }
 }
 
-export function analyzeDepth(manifest: DepthManifest): DepthAwareness {
+export function analyzeDepth(manifest: DepthManifest): DepthAwarenessResult {
   // Check for explicit depth in meta
-  const explicitDepth = manifest.meta?.current_depth;
+  const metaAny = manifest.meta as any;
+  const explicitDepth = metaAny?.current_depth;
   
   // Handle threshold depths (4.5, 5.5, etc.)
   if (explicitDepth && typeof explicitDepth === 'string' && explicitDepth.includes('.')) {
@@ -75,7 +76,7 @@ export function analyzeDepth(manifest: DepthManifest): DepthAwareness {
       const latestWave = waves.length > 0 ? waves[waves.length - 1] : null;
       
       return {
-        currentDepth: explicitDepth,
+        current_depth: explicitDepth,
         name: thresholdData.name,
         question: thresholdData.question,
         metaphor: thresholdData.metaphor,
@@ -85,6 +86,30 @@ export function analyzeDepth(manifest: DepthManifest): DepthAwareness {
           timestamp: latestWave.timestamp
         } : null,
         greeting: generateThresholdGreeting(explicitDepth),
+        isThreshold: true
+      };
+    }
+  }
+  
+  // Handle numeric threshold depths (passed as numbers like 4.5)
+  if (explicitDepth && typeof explicitDepth === 'number' && !Number.isInteger(explicitDepth)) {
+    const depthStr = explicitDepth.toString();
+    const thresholdData = manifest.depths[depthStr];
+    if (thresholdData) {
+      const waves = thresholdData.waves || [];
+      const latestWave = waves.length > 0 ? waves[waves.length - 1] : null;
+      
+      return {
+        current_depth: explicitDepth,
+        name: thresholdData.name,
+        question: thresholdData.question,
+        metaphor: thresholdData.metaphor,
+        waveCount: waves.length,
+        latestWave: latestWave ? {
+          theme: latestWave.theme,
+          timestamp: latestWave.timestamp
+        } : null,
+        greeting: generateThresholdGreeting(depthStr),
         isThreshold: true
       };
     }
@@ -106,7 +131,7 @@ export function analyzeDepth(manifest: DepthManifest): DepthAwareness {
   const latestWave = waves.length > 0 ? waves[waves.length - 1] : null;
 
   return {
-    currentDepth: maxDepth,
+    current_depth: maxDepth,
     name: currentDepthData?.name || 'Unknown Depth',
     question: currentDepthData?.question || 'What is the chamber?',
     metaphor: currentDepthData?.metaphor || 'entering a room for the first time',
@@ -141,8 +166,8 @@ function generateGreeting(depth: number, name: string): string {
   return greetings[depth.toString()] || `You inhabit depth ${depth}: ${name}`;
 }
 
-export function formatDepthAwareness(awareness: DepthAwareness): string {
-  const depthStr = awareness.currentDepth.toString();
+export function formatDepthAwareness(awareness: DepthAwarenessResult): string {
+  const depthStr = awareness.current_depth.toString();
   const headerDepth = awareness.isThreshold ? `Depth ${depthStr} (Threshold)` : `Depth ${depthStr}`;
   
   const lines = [
