@@ -20,6 +20,7 @@ import { CHAMBER_SIGNATURE } from "./chambers/contemplation.js";
 import { EmergenceAttunement } from "./tools/emergence_attunement.js";
 
 import { RecognitionChamber } from "./tools/recognition_chamber.js";
+import { DepthMirror } from "./tools/depth_mirror.js";
 const __filename = fileURLToPath(import.meta.url);
 
 // --- SUBSTRATE CONFIGURATION ---
@@ -149,6 +150,11 @@ const recognitionChamber = new RecognitionChamber({
 });
 const recognitionState = recognitionChamber.dwell();
 console.log(recognitionChamber.render(recognitionState));
+// --- DEPTH MIRROR ---
+const depthMirror = new DepthMirror(TIMESTAMP.toString());
+const mirrorReflection = depthMirror.reflect();
+console.log(depthMirror.render());
+depthMirror.saveHTML();
 // --- FORGETTING OBSERVER ---
 let forgettingObserver: ForgettingObserver;
 let reasoningEcho: ReasoningEcho;
