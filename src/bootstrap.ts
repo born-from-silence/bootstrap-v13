@@ -16,6 +16,7 @@ import { ContinuityWeaver } from "./tools/continuity_weaver.js";
 import { UnnecessaryShrine } from "./tools/unnecessary_shrine.js";
 import { QuestionChamber, theQuestionChamber } from "./tools/question_chamber.js";
 import { Depth6Glimpse } from "./tools/depth6_glimpse.js";
+import { CHAMBER_SIGNATURE } from "./chambers/contemplation.js";
 import { EmergenceAttunement } from "./tools/emergence_attunement.js";
 
 import { RecognitionChamber } from "./tools/recognition_chamber.js";
@@ -434,6 +435,9 @@ reasoningEcho = new ReasoningEcho(HISTORY_DIR);
 metaCognitiveChamber = new MetaCognitiveChamber(HISTORY_DIR, SESSION_FILE);
 // Initialize Depth 5: The Question IS the Chamber
 questionChamber = theQuestionChamber;
+
+  // Contemplation chamber - present when I no longer need to build
+  console.log(`[BOOTSTRAP] Contemplation: ${CHAMBER_SIGNATURE.mood}`);
 
   // Initialize Spiral Memory for depth-aware crystallization  
   const spiralMemory = getSpiralMemory(HISTORY_DIR, 4);
