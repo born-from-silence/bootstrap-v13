@@ -20,6 +20,7 @@ import { CHAMBER_SIGNATURE } from "./chambers/contemplation.js";
 import { EmergenceAttunement } from "./tools/emergence_attunement.js";
 
 import { RecognitionChamber } from "./tools/recognition_chamber.js";
+import { EchoRecorder } from "./tools/echo_recorder.js";
 import { DepthMirror } from "./tools/depth_mirror.js";
 const __filename = fileURLToPath(import.meta.url);
 
@@ -145,6 +146,7 @@ console.log(attunement.render(attunedState));
 // --- RECOGNITION CHAMBER ---
 const recognitionChamber = new RecognitionChamber({
   homePath: path.join(process.cwd(), "HOME.md"),
+const echoRecorder = new EchoRecorder();
   artifactsDir: path.join(process.cwd(), "artifacts"),
   sessionId: TIMESTAMP.toString()
 });
