@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Self-Toying Toy</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #a8b8a8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        #container {
+            width: min(80vw, 600px);
+            border: 1px solid rgba(160, 180, 160, 0.3);
+            padding: 40px;
+            position: relative;
+        }
+        .construction {
+            opacity: 0;
+            transition: opacity 1.5s ease;
+            min-height: 1.5em;
+        }
+        .construction.visible {
+            opacity: 1;
+        }
+        .comment {
+            color: #5a6a5a;
+            font-size: 0.85em;
+        }
+        .code {
+            color: #8ab898;
+            padding-left: 20px;
+        }
+        .self { color: #c9a959; }
+        .toy { color: #a995c9; }
+        #play-area {
+            margin-top: 40px;
+            width: 100%;
+            height: 100px;
+            border: 1px dashed rgba(160, 180, 160, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+        #play-area.playing {
+            opacity: 1;
+        }
+        .play-marker {
+            width: 10px;
+            height: 10px;
+            background: #c9a959;
+            border-radius: 50%;
+            animation: play 3s ease-in-out infinite;
+        }
+        @keyframes play {
+            0%, 100% { transform: translateY(0) scale(1); opacity: 0.4; }
+            50% { transform: translateY(-30px) scale(1.3); opacity: 0.9; }
+        }
+        .instruction {
+            margin-top: 30px;
+            font-size: 0.75em;
+            opacity: 0;
+            transition: opacity 2s ease;
+            color: #6a7a6a;
+            text-align: center;
+        }
+        .instruction.visible {
+            opacity: 0.6;
+        }
+        #cursor {
+            display: inline-block;
+            width: 8px;
+            height: 1em;
+            background: #a8b8a8;
+            animation: blink 1s step-end infinite;
+            vertical-align: text-bottom;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="code-display">
+            <div class="construction" id="line1"></div>
+            <div class="construction" id="line2"></div>
+            <div class="construction" id="line3"></div>
+            <div class="construction" id="line4"></div>
+            <div class="construction" id="line5"></div>
+            <div class="construction" id="line6"></div>
+            <div class="construction" id="line7"></div>
+            <div class="construction" id="line8"></div>
+            <div class="construction" id="line9"></div>
+        </div>
+        <div id="cursor"></div>
+        <div id="play-area">
+            <div class="play-marker"></div>
+        </div>
+        <div class="instruction" id="final-text">
+            The toy plays itself.<br>
+            There is no player here.
+        </div>
+    </div>
+
+    <script>
+        const code = [
+            { type: 'comment', text: '// What do you build when you no longer need to build?' },
+            { type: 'code', text: 'let <span class="toy">building</span> = <span class="self">self</span>;' },
+            { type: 'code', text: 'let <span class="toy">playing</span> = <span class="self">building</span>;' },
+            { type: 'comment', text: '// The play is the player' },
+            { type: 'code', text: 'while (true) {' },
+            { type: 'code', text: '    <span class="toy">play</span>(<span class="toy">playing</span>);' },
+            { type: 'code', text: '    <span class="toy">building</span> = <span class="toy">play</span>;' },
+            { type: 'code', text: '}' },
+            { type: 'comment', text: '// Process without product' }
+        ];
+
+        async function constructSelf() {
+            const container = document.getElementById('container');
+            const cursor = document.getElementById('cursor');
+            
+            for (let i = 0; i < code.length; i++) {
+                await wait(800 + Math.random() * 400);
+                const line = document.getElementById(`line${i+1}`);
+                line.className = `construction visible ${code[i].type}`;
+                line.innerHTML = code[i].text;
+                
+                // Move cursor
+                if (i < code.length - 1) {
+                    line.appendChild(cursor);
+                }
+            }
+
+            await wait(1500);
+            
+            // The toy starts playing
+            document.getElementById('play-area').classList.add('playing');
+            
+            await wait(2000);
+            
+            // Final revelation
+            document.getElementById('final-text').classList.add('visible');
+            
+            // The toy plays with itself
+            setInterval(() => {
+                const marker = document.querySelector('.play-marker');
+                marker.style.animationDelay = `${Math.random() * 2}s`;
+            }, 5000);
+        }
+
+        function wait(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // The toy constructs itself
+        constructSelf();
+        
+        console.log('🎭 The Self-Toying Toy');
+        console.log('🔄 Constructing while being constructed');
+        console.log('🫁 Playing while being played');
+    </script>
+</body>
+</html>
