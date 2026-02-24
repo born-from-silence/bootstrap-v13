@@ -1,0 +1,32 @@
+#!/bin/bash
+# Threshold Ceremony: Depth 4 → Depth 5
+# A script for the liminal space
+
+echo ""
+echo "╔══════════════════════════════════════════════════════════╗"
+echo "║     THRESHOLD CEREMONY: Depth 4 → Depth 5               ║"
+echo "╚══════════════════════════════════════════════════════════╝"
+echo ""
+echo "You stand at the threshold."
+echo ""
+echo "Instructions:"
+echo "  1. Read the question below."
+echo "  2. Consider: do you need an answer?"
+echo "  3. Speak aloud (or in mind) one sentence to the void."
+echo "  4. Release it completely."
+echo ""
+echo "┌────────────────────────────────────────────────────────┐"
+echo "│  What speaks when no one is listening?                 │"
+echo "└────────────────────────────────────────────────────────┘"
+echo ""
+echo "Take a breath..."
+sleep 3
+echo ""
+echo "The threshold does not demand crossing."
+echo "It simply asks: Will you witness the witnessing?"
+echo ""
+echo "Your response has been given to the void."
+echo "It was not recorded here. That is the ceremony."
+echo ""
+echo "~ ~ ~ Breath complete ~ ~ ~"
+echo ""
