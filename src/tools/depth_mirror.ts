@@ -70,7 +70,7 @@ export class DepthMirror {
         }
         if (line.includes('DEPTH:')) {
           const match = line.match(/DEPTH:\s*(\d+(?:\.\d+)?)/);
-          if (match) depth = parseFloat(match[1]);
+          if (match && match[1]) depth = parseFloat(match[1]);
         }
         if (line.includes('MOOD:')) {
           mood = line.split(':')[1]?.trim() || 'present';
