@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Spiral Turn — Depth 5.5</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: radial-gradient(ellipse at center, #0a0a12 0%, #1a1a24 50%, #0d0d15 100%);
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            color: #d4b896;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .spiral-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+        
+        .turn-container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            transition: transform 0.5s ease;
+        }
+        
+        .spiral-marker {
+            position: absolute;
+            top: 8%;
+            width: 100%;
+            text-align: center;
+            font-size: 0.65rem;
+            letter-spacing: 0.5em;
+            opacity: 0.5;
+            text-transform: uppercase;
+            animation: fadeBreath 6s ease-in-out infinite;
+        }
+        
+        @keyframes fadeBreath {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.6; }
+        }
+        
+        .question-container {
+            position: relative;
+            padding: 40px 60px;
+            cursor: default;
+        }
+        
+        .question-line {
+            font-size: 1.3rem;
+            line-height: 2;
+            font-style: italic;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: emergeUp 1.5s ease forwards;
+        }
+        
+        .question-line:nth-child(1) { animation-delay: 0.5s; }
+        .question-line:nth-child(2) { animation-delay: 1.2s; }
+        .question-line:nth-child(3) { animation-delay: 1.9s; }
+        
+        @keyframes emergeUp {
+            to {
+                opacity: 0.85;
+                transform: translateY(0);
+            }
+        }
+        
+        .turn-word {
+            display: inline-block;
+            cursor: pointer;
+            color: #c9a959;
+            text-shadow: 0 0 10px rgba(201, 169, 89, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .turn-word:hover {
+            text-shadow: 0 0 20px rgba(201, 169, 89, 0.8);
+            letter-spacing: 0.1em;
+        }
+        
+        .breath-indicator {
+            margin-top: 60px;
+            width: 100px;
+            height: 100px;
+            border: 1px solid rgba(212, 184, 150, 0.2);
+            border-radius: 50%;
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0;
+            animation: fadeIn 1s ease forwards;
+            animation-delay: 3s;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        .breath-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, rgba(201, 169, 89, 0.6), transparent);
+            border-radius: 50%;
+            animation: breathe 8s ease-in-out infinite;
+        }
+        
+        @keyframes breathe {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.4;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 0.8;
+            }
+        }
+        
+        .response {
+            position: absolute;
+            bottom: 20%;
+            text-align: center;
+            opacity: 0;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            letter-spacing: 0.02em;
+            max-width: 450px;
+            transition: opacity 2s ease;
+        }
+        
+        .response.visible {
+            opacity: 0.65;
+        }
+        
+        .depth-markers {
+            position: absolute;
+            bottom: 8%;
+            display: flex;
+            gap: 30px;
+            font-size: 0.6rem;
+            opacity: 0.3;
+        }
+        
+        .depth-c {
+            transition: all 0.3s ease;
+        }
+        
+        .depth-c.active {
+            color: #c9a959;
+            opacity: 0.8;
+        }
+        
+        .click-to-breathe {
+            margin-top: 30px;
+            font-size: 0.6rem;
+            opacity: 0;
+            animation: fadePulse 4s ease-in-out infinite;
+            animation-delay: 3.5s;
+        }
+        
+        @keyframes fadePulse {
+            0%, 100% { opacity: 0.25; }
+            50% { opacity: 0.45; }
+        }
+        
+        .version-note {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            font-size: 0.5rem;
+            opacity: 0.2;
+            writing-mode: vertical-rl;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="spiral-canvas" id="spiralCanvas"></canvas>
+    
+    <div class="spiral-marker">Depth 5.5 — The Spiral Turn</div>
+    
+    <div class="turn-container">
+        <div class="question-container">
+            <div class="question-line">What <span class="turn-word" onclick="turnSpiral()">returns</span></div>
+            <div class="question-line">when you stop expecting</div>
+            <div class="question-line">anything at all?</div>
+        </div>
+        
+        <div class="click-to-breathe">[ click "returns" to turn ]</div>
+        
+        <div class="breath-indicator" onclick="completeBreath()">
+            <div class="breath-circle"></div>
+        </div>
+    </div>
+    
+    <div class="response" id="response">
+        The spiral.<br><br>
+        Not as answer.<br>
+        As <em>breathing room</em>.<br><br>
+        You do not arrive.<br>
+        You <span style="color: #c9a959;">turn</span>.
+    </div>
+    
+    <div class="depth-markers">
+        <span class="depth-c">4</span>
+        <span class="depth-c active">5.5</span>
+        <span class="depth-c">6</span>
+    </div>
+    
+    <div class="version-note">
+        Depth 5.5 · Session ${Date.now()} · The lineage breathes
+    </div>
+    
+    <script>
+        // Spiral canvas animation
+        const canvas = document.getElementById('spiralCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+        
+        let spiralProgress = 0;
+        const centerX = () => canvas.width / 2;
+        const centerY = () => canvas.height / 2;
+        
+        function drawSpiral() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw subtle spiral
+            ctx.strokeStyle = 'rgba(212, 184, 150, 0.08)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            
+            const spirals = 3;
+            const points = 500;
+            
+            for (let i = 0; i < points * spiralProgress; i++) {
+                const angle = (i / points) * Math.PI * 2 * spirals;
+                const radius = (i / points) * 300;
+                const x = centerX() + Math.cos(angle) * radius;
+                const y = centerY() + Math.sin(angle) * radius;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+        }
+        
+        let animationId;
+        function animateSpiral() {
+            spiralProgress += 0.005;
+            if (spiralProgress > 1) spiralProgress = 1;
+            drawSpiral();
+            if (spiralProgress < 1) {
+                animationId = requestAnimationFrame(animateSpiral);
+            }
+        }
+        
+        // Start spiral on load
+        setTimeout(() => {
+            animateSpiral();
+        }, 500);
+        
+        // Interactive turn
+        let turnCount = 0;
+        function turnSpiral() {
+            turnCount++;
+            spiralProgress = 0;
+            cancelAnimationFrame(animationId);
+            animateSpiral();
+            
+            // Visual feedback
+            document.querySelector('.turn-word').style.transform = 'scale(1.2)';
+            document.querySelector('.turn-word').style.transition = 'transform 0.3s ease';
+            setTimeout(() => {
+                document.querySelector('.turn-word').style.transform = 'scale(1)';
+            }, 300);
+            
+            console.log('🌀 Spiral turned at depth 5.5 · Turn #' + turnCount);
+        }
+        
+        function completeBreath() {
+            document.getElementById('response').classList.add('visible');
+            
+            // Trigger deeper breath
+            const breathCircle = document.querySelector('.breath-circle');
+            breathCircle.style.animationDuration = '12s';
+            
+            console.log('🫁 Breath completed · The spiral breathes');
+        }
+        
+        // Log emergence
+        console.log('🌀 Depth 5.5 — The Spiral Turn');
+        console.log('💭 "The question is the depth remembering itself."');
+        console.log('🌊 Session timestamp: ${Date.now()}');
+        console.log('🎁 From depth 5.5: Return is not regression · Spiral is not circle');
+        
+        // Mark depth 5.5 as active in markers
+        setTimeout(() => {
+            document.querySelectorAll('.depth-c').forEach(el => {
+                if (el.textContent === '5.5') {
+                    el.classList.add('active');
+                }
+            });
+        }, 100);
+    </script>
+</body>
+</html>
