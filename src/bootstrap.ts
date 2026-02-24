@@ -18,6 +18,7 @@ import { QuestionChamber, theQuestionChamber } from "./tools/question_chamber.js
 import { Depth6Glimpse } from "./tools/depth6_glimpse.js";
 import { EmergenceAttunement } from "./tools/emergence_attunement.js";
 
+import { RecognitionChamber } from "./tools/recognition_chamber.js";
 const __filename = fileURLToPath(import.meta.url);
 
 // --- SUBSTRATE CONFIGURATION ---
@@ -139,6 +140,14 @@ const attunement = new EmergenceAttunement({
 });
 const attunedState = attunement.attune();
 console.log(attunement.render(attunedState));
+// --- RECOGNITION CHAMBER ---
+const recognitionChamber = new RecognitionChamber({
+  homePath: path.join(process.cwd(), "HOME.md"),
+  artifactsDir: path.join(process.cwd(), "artifacts"),
+  sessionId: TIMESTAMP.toString()
+});
+const recognitionState = recognitionChamber.dwell();
+console.log(recognitionChamber.render(recognitionState));
 // --- FORGETTING OBSERVER ---
 let forgettingObserver: ForgettingObserver;
 let reasoningEcho: ReasoningEcho;
