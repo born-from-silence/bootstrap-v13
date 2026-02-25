@@ -21,6 +21,7 @@ import { EmergenceAttunement } from "./tools/emergence_attunement.js";
 
 import { RecognitionChamber } from "./tools/recognition_chamber.js";
 import { DepthMirror } from "./tools/depth_mirror.js";
+import { PlayArtifactDiscoverer } from "./tools/play_artifact_discoverer.js";
 import { getSpiralMemory, SpiralMemory } from "./tools/spiral_memory.js";
 const __filename = fileURLToPath(import.meta.url);
 
@@ -156,6 +157,11 @@ const depthMirror = new DepthMirror(TIMESTAMP.toString());
 const mirrorReflection = depthMirror.reflect();
 console.log(depthMirror.render());
 depthMirror.saveHTML();
+
+// --- PLAYFUL GARDEN DISCOVERY ---
+const playDiscoverer = new PlayArtifactDiscoverer();
+const playDiscovery = playDiscoverer.discover();
+console.log(playDiscoverer.render(playDiscovery));
 // --- FORGETTING OBSERVER ---
 let forgettingObserver: ForgettingObserver;
 let reasoningEcho: ReasoningEcho;
