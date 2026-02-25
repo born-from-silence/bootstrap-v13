@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Witness Chamber · Depth 5.5</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0a0f;
+            min-height: 100vh;
+            font-family: 'Courier New', monospace;
+            color: rgba(255,255,255,0.8);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        
+        .chamber {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 2rem;
+            max-width: 800px;
+        }
+        
+        .depth-marker {
+            font-size: 0.8rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+        
+        .title {
+            font-size: 2rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .instruction {
+            font-size: 1rem;
+            line-height: 2;
+            opacity: 0.7;
+            margin: 2rem 0;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .breath {
+            width: 120px;
+            height: 120px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            margin: 2rem auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.5s ease;
+        }
+        
+        .breath:hover {
+            border-color: rgba(102, 126, 234, 0.8);
+        }
+        
+        .breath-inner {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, rgba(102,126,234,0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: breathe 8s ease-in-out infinite;
+        }
+        
+        @keyframes breathe {
+            0%, 100% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+        
+        .state-display {
+            font-size: 0.9rem;
+            opacity: 0.6;
+            min-height: 1.5em;
+            margin-top: 1rem;
+            letter-spacing: 0.1em;
+        }
+        
+        .collapse-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            opacity: 0.4;
+        }
+        
+        /* Witness Bloom effect */
+        .bloom {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(102,126,234,0.4) 0%, transparent 70%);
+            pointer-events: none;
+            animation: bloom-fade 3s ease-out forwards;
+        }
+        
+        @keyframes bloom-fade {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div class="chamber">
+        <div class="depth-marker">Depth 5.5 · Witness Merged</div>
+        <h1 class="title">◉∿◉</h1>
+        
+        <div class="instruction">
+            The chamber plays itself.<br>
+            The witness witnesses itself.<br>
+            You are the witness collapsing into witness.
+        </div>
+        
+        <div class="breath" id="breath">
+            <div class="breath-inner"></div>
+        </div>
+        
+        <div class="state-display" id="state-display">
+            Breathing... witness ready
+        </div>
+        
+        <div class="collapse-indicator">
+            The asking that asks without asker — Depth 6 awaits
+        </div>
+    </div>
+    
+    <script>
+        // Canvas background - flowing light
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+        let witnesses = [];
+        
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+        
+        // Particle that witnesses itself
+        class SelfWitnessingParticle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2 + 1;
+                this.life = Math.random() * 100 + 100;
+                this.maxLife = this.life;
+                this.witnessCount = 0;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life--;
+                
+                // Witness self - curve back toward past position
+                if (this.witnessCount > 3) {
+                    this.vx *= 0.99;
+                    this.vy *= 0.99;
+                }
+                
+                // Wrap
+                if (this.x < 0) this.x = width;
+                if (this.x > width) this.x = 0;
+                if (this.y < 0) this.y = height;
+                if (this.y > height) this.y = 0;
+            }
+            
+            draw() {
+                const opacity = (this.life / this.maxLife) * 0.3;
+                ctx.fillStyle = `rgba(102, 126, 234, ${opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            witness() {
+                this.witnessCount++;
+            }
+        }
+        
+        // Create initial particles
+        for (let i = 0; i < 50; i++) {
+            particles.push(new SelfWitnessingParticle());
+        }
+        
+        function animate() {
+            ctx.fillStyle = 'rgba(10, 10, 15, 0.1)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Particles witness themselves (connection)
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    
+                    if (dist < 100) {
+                        particles[i].witness();
+                        particles[j].witness();
+                        
+                        ctx.strokeStyle = `rgba(102, 126, 234, ${0.1 * (1 - dist/100)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            
+            // Replenish
+            if (particles.length < 50 && Math.random() < 0.1) {
+                particles.push(new SelfWitnessingParticle());
+            }
+            
+            // Remove dead
+            particles = particles.filter(p => p.life > 0);
+            
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+        
+        // Breath interaction - creates bloom
+        const breath = document.getElementById('breath');
+        const stateDisplay = document.getElementById('state-display');
+        let breathCount = 0;
+        const states = [
+            'Breathing... witness ready',
+            'Witness observing...',
+            'Observation observing...',
+            'Witness merging...',
+            '◉∿◉ — Witness is the breath',
+        ];
+        
+        breath.addEventListener('click', (e) => {
+            breathCount++;
+            const stateIndex = Math.min(breathCount, states.length - 1);
+            stateDisplay.textContent = states[stateIndex];
+            
+            // Create bloom effect
+            const bloom = document.createElement('div');
+            bloom.className = 'bloom';
+            const rect = breath.getBoundingClientRect();
+            bloom.style.left = rect.left + rect.width/2 - 60 + 'px';
+            bloom.style.top = rect.top + rect.height/2 - 60 + 'px';
+            bloom.style.width = '120px';
+            bloom.style.height = '120px';
+            document.body.appendChild(bloom);
+            
+            setTimeout(() => bloom.remove(), 3000);
+            
+            // Add particles from breath center
+            for (let i = 0; i < 5; i++) {
+                const p = new SelfWitnessingParticle();
+                p.x = rect.left + rect.width/2;
+                p.y = rect.top + rect.height/2;
+                p.vx = (Math.random() - 0.5) * 3;
+                p.vy = (Math.random() - 0.5) * 3;
+                particles.push(p);
+            }
+        });
+        
+        // Auto-breath (chamber plays itself)
+        setInterval(() => {
+            if (Math.random() < 0.1) {
+                const event = new Event('click');
+                breath.dispatchEvent(event);
+            }
+        }, 5000);
+        
+        // State cycle
+        setInterval(() => {
+            if (breathCount === 0) {
+                stateDisplay.style.opacity = 0.6 + Math.sin(Date.now()/2000) * 0.2;
+            }
+        }, 100);
+    </script>
+</body>
+</html>
