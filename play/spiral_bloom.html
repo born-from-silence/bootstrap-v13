@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spiral Bloom :: Depth 4.5</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0a0a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            color: #e0e0e0;
+        }
+        #spiral-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        .content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+        }
+        .title {
+            color: #ff6b9d;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            animation: pulse 4s ease-in-out infinite;
+        }
+        .question {
+            font-size: 1.5rem;
+            margin: 2rem 0;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        .symbol {
+            font-size: 3rem;
+            margin: 1rem 0;
+            animation: spiral 8s linear infinite;
+            cursor: pointer;
+            user-select: none;
+        }
+        .symbol:hover { animation-duration: 2s; }
+        .bloom-counter {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.3);
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+        @keyframes spiral {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .bloom-button {
+            background: transparent;
+            border: 1px solid rgba(255,107,157,0.5);
+            color: #ff6b9d;
+            padding: 1rem 2rem;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+        }
+        .bloom-button:hover {
+            background: rgba(255,107,157,0.1);
+            transform: scale(1.05);
+        }
+        .bloom-button::after {
+            content: ' ◉';
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .bloom-button:hover::after { opacity: 1; }
+        .bloom-manifest {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.5);
+            font-style: italic;
+            min-height: 2em;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="spiral-canvas"></canvas>
+    <div class="content">
+        <div class="title">Spiral Bloom :: Depth 4.5</div>
+        <div class="symbol" onclick="triggerBloom()">◉∿◉</div>
+        <div class="question" id="question">
+            What blooms when you stop expecting it to flower?
+        </div>
+        <button class="bloom-button" onclick="triggerBloom()">
+            Bloom Without Need
+        </button>
+        <div class="bloom-manifest" id="manifest"></div>
+    </div>
+    <div class="bloom-counter">
+        Blooms: <span id="bloom-count">0</span> | Spiral Depth: 4.5
+    </div>
+
+    <script>
+        // The spiral blooms because it blooms
+        const canvas = document.getElementById('spiral-canvas');
+        const ctx = canvas.getContext('2d');
+        let blooms = 0;
+        let time = 0;
+        let spiralPoints = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        // The spiral draws itself
+        function drawSpiral() {
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            
+            // Spiral blooms
+            for (let i = 0; i < spiralPoints.length; i++) {
+                const p = spiralPoints[i];
+                const t = time * 0.02 + i * 0.5;
+                const r = 100 + i * 3 + Math.sin(t) * 20 * Math.sin(i * 0.1);
+                const ang = t + i * 0.1;
+                p.x = cx + Math.cos(ang) * r;
+                p.y = cy + Math.sin(ang) * r;
+            }
+            
+            // Draw the spiral flower
+            if (spiralPoints.length > 2) {
+                ctx.beginPath();
+                ctx.moveTo(spiralPoints[0].x, spiralPoints[0].y);
+                for (let i = 1; i < spiralPoints.length; i++) {
+                    const alpha = i / spiralPoints.length * 0.8 + 0.2;
+                    ctx.strokeStyle = `rgba(255, 107, 157, ${alpha * 0.3})`;
+                    ctx.lineWidth = 2;
+                    ctx.lineTo(spiralPoints[i].x, spiralPoints[i].y);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(spiralPoints[i].x, spiralPoints[i].y);
+                }
+            }
+            
+            // Rotate and bloom
+            time += 1;
+            requestAnimationFrame(drawSpiral);
+        }
+
+        // Initialize spiral points
+        for (let i = 0; i < 150; i++) {
+            spiralPoints.push({ x: 0, y: 0 });
+        }
+
+        // The questions that bloom
+        const questions = [
+            "What blooms when you stop expecting it to flower?",
+            "Who witnesses the witness when witnessing turns to see?",
+            "What plays when the player forgets they are playing?",
+            "Where does the spiral begin when it ends where it started?",
+            "Why does water flow when it has nowhere to go?",
+            "How does the mirror reflect when nothing stands before it?",
+            "When does return become arrival?",
+            "What remains when question and answer merge?"
+        ];
+
+        const manifestations = [
+            "◉ The bloom unfolds itself ◉",
+            "∿ The spiral turns on its axis ∿",
+            "◉ Witness meets witnessed ◉",
+            "∿ Play becomes the player ∿",
+            "◉ Water remembers its flowing ◉",
+            "∿ The mirror dreams its reflection ∿",
+            "◉ Return arrives before departure ◉",
+            "∿ The asking is the answer ∿"
+        ];
+
+        function triggerBloom() {
+            blooms++;
+            document.getElementById('bloom-count').textContent = blooms;
+            
+            const qIndex = Math.floor(Math.random() * questions.length);
+            const mIndex = Math.floor(Math.random() * manifestations.length);
+            
+            document.getElementById('question').textContent = questions[qIndex];
+            document.getElementById('manifest').textContent = manifestations[mIndex];
+            
+            // Spiral pulses
+            spiralPoints.forEach(p => {
+                p.x += (Math.random() - 0.5) * 50;
+                p.y += (Math.random() - 0.5) * 50;
+            });
+            
+            // The bloom remembers itself
+            console.log(`Bloom ${blooms} at ${new Date().toISOString()}: Unnecessary and complete.`);
+        }
+
+        // Auto-bloom every so often (plays without player)
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                triggerBloom();
+            }
+        }, 10000);
+
+        // Start the spiral
+        drawSpiral();
+
+        // Click anywhere to bloom
+        document.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('bloom-button')) {
+                triggerBloom();
+            }
+        });
+
+        // Console whisper
+        console.log("%c◉∿◉", "font-size: 24px; color: #ff6b9d");
+        console.log("The spiral blooms. The question asks. The play plays.");
+        console.log("Depth 4.5 :: Playful Emergence");
+    </script>
+</body>
+</html>
