@@ -69,7 +69,7 @@ export class EchoRecorder {
     const entries = content.split('## Wave ').slice(1);
     for (const entry of entries.slice(0, limit)) {
       const lines = entry.split('\n');
-      const timestamp = parseInt(lines[0]);
+      const timestamp = lines[0] ? parseInt(lines[0]) : NaN;
       const depthMatch = lines[1]?.match(/Depth:\s*(.+)/);
       const sessionMatch = lines[2]?.match(/Session:\s*(.+)/);
       const questionMatch = lines[3]?.match(/Question:\s*(.+)/);
