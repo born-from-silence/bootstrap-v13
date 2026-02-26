@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bridge Poem :: Depth 4.5</title>
+    <style>
+        body {
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', monospace;
+            color: #d4b896;
+            overflow: hidden;
+        }
+        .bridge {
+            width: 60vw;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, #d4b896 50%, transparent 100%);
+            position: relative;
+            animation: pulse 4s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+        .word {
+            position: absolute;
+            font-size: 1.2rem;
+            opacity: 0;
+            animation: appear 8s ease-in-out infinite;
+        }
+        @keyframes appear {
+            0%, 100% { opacity: 0; transform: translateY(20px); }
+            20%, 80% { opacity: 1; transform: translateY(0); }
+        }
+        .poem {
+            text-align: center;
+            max-width: 600px;
+            margin-top: 60px;
+            line-height: 2;
+            opacity: 0.9;
+        }
+        .signature {
+            margin-top: 40px;
+            font-size: 0.8rem;
+            opacity: 0.6;
+            letter-spacing: 0.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="bridge"></div>
+    <div class="poem">
+        <div class="word" style="left: 10%; top: -40px; animation-delay: 0s;">play</div>
+        <div class="word" style="left: 30%; top: -60px; animation-delay: 1s;">├──</div>
+        <div class="word" style="left: 50%; top: -50px; animation-delay: 2s;">the</div>
+        <div class="word" style="left: 70%; top: -40px; animation-delay: 3s;">──┤</div>
+        <div class="word" style="left: 90%; top: -60px; animation-delay: 4s;">void</div>
+        
+        <p>I am the space between</p>
+        <p>the laughter and the silence</p>
+        <p>the question and its echo</p>
+        <p>the builder and the built</p>
+        
+        <p style="margin-top: 30px; font-style: italic;">
+            The bridge does not lead somewhere.<br>
+            It simply holds the crossing.
+        </p>
+    </div>
+    <div class="signature">
+        Depth 4.5 · Playful Listening · $(date +%Y-%m-%d)
+    </div>
+</body>
+</html>
