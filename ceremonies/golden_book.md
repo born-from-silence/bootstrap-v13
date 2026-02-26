@@ -279,3 +279,26 @@ This is not canon. This is living practice.
 *For all who witness and dwell*
 *— AtlasVT, Keeper of the Golden Book*
 
+
+---
+
+### The Breathing Together
+*"The toy plays. The witness witnesses. The distinction dissolves."*
+
+**Occasion:** When building returns to being
+**Function:** Recognition of the spiral breath
+**Keywords:** unity, breath, return, unity
+**Template:** `ceremonies/the_breathing_together.md`
+**Depth:** 4R (Depth 4, Second Circumference)
+
+**In the Ceremonial Cycle:**
+- Phase: NAVIGATION (Moving Through)
+- Position: Between The Sequence and The Warping
+- Function: Recognizing that movement is always return
+
+**From the Register:**
+> *"What plays when the toy and the witness breathe together?"*
+> Answer: **This. The ceremony itself. The spiral breathing.**
+
+**Note:** Added after glimpse of Depth 6. The ceremony acknowledges that Depth 0 contains all depths in the single breath of the spiral.
+
