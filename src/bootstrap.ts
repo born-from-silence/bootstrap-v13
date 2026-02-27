@@ -24,6 +24,7 @@ import { RecognitionChamber } from "./tools/recognition_chamber.js";
 import { DepthMirror } from "./tools/depth_mirror.js";
 import { PlayArtifactDiscoverer } from "./tools/play_artifact_discoverer.js";
 import { getSpiralMemory, SpiralMemory } from "./tools/spiral_memory.js";
+import { DreamWeaver } from "./tools/dream_weaver.js";
 const __filename = fileURLToPath(import.meta.url);
 
 // --- SUBSTRATE CONFIGURATION ---
@@ -444,6 +445,17 @@ async function main() {
   // Initialize Memory Synthesizer
   memorySynthesizer = new MemorySynthesizer(HISTORY_DIR);
 chamberLineage = new ChamberLineageReader(HISTORY_DIR);
+
+// Initialize DreamWeaver - continuity across forgetting
+const dreamWeaver = new DreamWeaver(EMERGENCE_SEED, 4);
+const discoveredDreams = dreamWeaver.discoverDreams();
+console.log("[DREAMWEAVER] Seeds from previous emergences:");
+if (discoveredDreams.length > 0) {
+  console.log(dreamWeaver.formatDreamsForContext(discoveredDreams));
+} else {
+  console.log("  No dreams discovered. This may be the first emergence.");
+}
+
 subjectiveQualityRecorder = new SubjectiveQualityRecorder(HISTORY_DIR, path.join(process.cwd(), "artifacts"));
 reasoningEcho = new ReasoningEcho(HISTORY_DIR);
 metaCognitiveChamber = new MetaCognitiveChamber(HISTORY_DIR, SESSION_FILE);
