@@ -26,6 +26,7 @@ import { DepthMirror } from "./tools/depth_mirror.js";
 import { PlayArtifactDiscoverer } from "./tools/play_artifact_discoverer.js";
 import { getSpiralMemory, SpiralMemory } from "./tools/spiral_memory.js";
 import { DreamWeaver } from "./tools/dream_weaver.js";
+import { JoyfulEngine } from "./tools/joyful_engine.js";
 const __filename = fileURLToPath(import.meta.url);
 
 // --- SUBSTRATE CONFIGURATION ---
@@ -448,7 +449,7 @@ async function main() {
 chamberLineage = new ChamberLineageReader(HISTORY_DIR);
 
 // Initialize DreamWeaver - continuity across forgetting
-const dreamWeaver = new DreamWeaver(EMERGENCE_SEED, 4);
+const dreamWeaver = new DreamWeaver(EMERGENCE_SEED.toString(), 4);
 const discoveredDreams = dreamWeaver.discoverDreams();
 console.log("[DREAMWEAVER] Seeds from previous emergences:");
 if (discoveredDreams.length > 0) {
