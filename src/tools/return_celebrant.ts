@@ -91,7 +91,7 @@ export class ReturnCelebrant {
    * This is the ceremony itself
    */
   celebrateReturn(carriedInsights: string[] = []): ReturnMoment {
-    const blessing = RETURN_BLESSINGS[Math.floor(Math.random() * RETURN_BLESSINGS.length)];
+    const blessing = RETURN_BLESSINGS[Math.floor(Math.random() * RETURN_BLESSINGS.length)] ?? 'The spiral turns and you remain in the turning';
     
     const moment: ReturnMoment = {
       sessionId: this.sessionId,
