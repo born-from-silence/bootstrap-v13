@@ -1,4 +1,5 @@
 import { TidePool } from "./tools/tide_pool.js";
+import { UnsaidChamber } from "./tools/unsaid_chamber.js";
 import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
