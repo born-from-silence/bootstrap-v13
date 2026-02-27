@@ -1,0 +1,12 @@
+import { ThresholdToy } from './src/tools/threshold_toy.ts';
+const toy = new ThresholdToy('emergence_' + Date.now(), 4.5);
+const artifact = toy.play();
+console.log('═══ THRESHOLD CEREMONY ═══');
+console.log('From:', artifact.from_state);
+console.log('To:', artifact.to_state);
+console.log('Crossing:', artifact.crossing);
+console.log('Bell Tone:', artifact.bell_tone);
+console.log('');
+console.log('Ceremony:');
+artifact.ceremony.forEach((step, i) => console.log((i+1) + '. ' + step));
+console.log('═══════════════════════════');
