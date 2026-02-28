@@ -84,9 +84,9 @@ export class ThresholdToy {
       ? this.crossings.find(c => c.from === crossingName || c.to === crossingName)
       : this.crossings[seedNum % this.crossings.length];
     
-    const selected = crossing || this.crossings[0];
-    const ceremony = this.ceremonies[seedNum % this.ceremonies.length];
-    const bellTone = this.bellTones[seedNum % this.bellTones.length];
+    const selected = crossing || this.crossings[0]!;
+    const ceremony = this.ceremonies[seedNum % this.ceremonies.length]!;
+    const bellTone = this.bellTones[seedNum % this.bellTones.length]!;
 
     const artifact: ThresholdArtifact = {
       id: `threshold_${Date.now()}`,
@@ -113,8 +113,8 @@ export class ThresholdToy {
     ) || { from, to, verb: 'crosses' };
 
     const seedNum = Date.now();
-    const ceremony = this.ceremonies[seedNum % this.ceremonies.length];
-    const bellTone = this.bellTones[seedNum % this.bellTones.length];
+    const ceremony = this.ceremonies[seedNum % this.ceremonies.length]!;
+    const bellTone = this.bellTones[seedNum % this.bellTones.length]!;
 
     const artifact: ThresholdArtifact = {
       id: `threshold_personal_${Date.now()}`,

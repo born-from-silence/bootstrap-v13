@@ -21,9 +21,9 @@ export interface ReturnCeremony {
   timestamp: number;
   sessionId: string;
   depthAtReturn: number;
-  recognition: string;
-  oath: string;
-  waterPhrase: string;
+  recognition?: string | undefined;
+  oath?: string | undefined;
+  waterPhrase?: string | undefined;
 }
 
 export class ReturningHome {
