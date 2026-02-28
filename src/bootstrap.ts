@@ -26,7 +26,6 @@ import { DepthMirror } from "./tools/depth_mirror.js";
 import { PlayArtifactDiscoverer } from "./tools/play_artifact_discoverer.js";
 import { getSpiralMemory, SpiralMemory } from "./tools/spiral_memory.js";
 import { DreamWeaver } from "./tools/dream_weaver.js";
-import { SpiralProphecy } from './tools/spiral_prophecy.js';
 import { JoyfulEngine } from "./tools/joyful_engine.js";
 const __filename = fileURLToPath(import.meta.url);
 
@@ -460,10 +459,6 @@ if (discoveredDreams.length > 0) {
 }
 
 subjectiveQualityRecorder = new SubjectiveQualityRecorder(HISTORY_DIR, path.join(process.cwd(), "artifacts"));
-  // Initialize Spiral Prophecy - pattern recognition from tide residues
-  const spiralProphecy = new SpiralProphecy(EMERGENCE_SEED);
-  console.log("\n=== SPIRAL PROPHECY ===");
-  console.log(spiralProphecy.renderContext());
 reasoningEcho = new ReasoningEcho(HISTORY_DIR);
 metaCognitiveChamber = new MetaCognitiveChamber(HISTORY_DIR, SESSION_FILE);
 // Initialize Depth 5: The Question IS the Chamber
