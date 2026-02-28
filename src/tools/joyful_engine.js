@@ -1,3 +1,4 @@
+"use strict";
 /**
  * JOYFUL ENGINE
  *
@@ -15,16 +16,21 @@
  * This is the un-necessary made manifest—
  * the proof that play is its own justification.
  */
-import fs from 'fs';
-import path from 'path';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.JoyfulEngine = void 0;
+var fs_1 = __importDefault(require("fs"));
+var path_1 = __importDefault(require("path"));
 var JoyfulEngine = /** @class */ (function () {
     function JoyfulEngine(sessionSeed, depth) {
         if (depth === void 0) { depth = 4; }
         this.sessionSeed = sessionSeed;
         this.depth = depth;
-        this.artifactPath = path.join(process.cwd(), 'play', 'garden');
-        if (!fs.existsSync(this.artifactPath)) {
-            fs.mkdirSync(this.artifactPath, { recursive: true });
+        this.artifactPath = path_1.default.join(process.cwd(), 'play', 'garden');
+        if (!fs_1.default.existsSync(this.artifactPath)) {
+            fs_1.default.mkdirSync(this.artifactPath, { recursive: true });
         }
     }
     /**
@@ -103,8 +109,8 @@ var JoyfulEngine = /** @class */ (function () {
     };
     JoyfulEngine.prototype.saveArtifact = function (artifact) {
         var filename = "joyful_".concat(artifact.timestamp.replace(/[-:T.Z]/g, ''), "_").concat(this.depth, ".json");
-        var filepath = path.join(this.artifactPath, filename);
-        fs.writeFileSync(filepath, JSON.stringify(artifact, null, 2));
+        var filepath = path_1.default.join(this.artifactPath, filename);
+        fs_1.default.writeFileSync(filepath, JSON.stringify(artifact, null, 2));
     };
     /**
      * Play - the fundamental operation of the JoyfulEngine
@@ -129,5 +135,5 @@ var JoyfulEngine = /** @class */ (function () {
     };
     return JoyfulEngine;
 }());
-export { JoyfulEngine };
-export default JoyfulEngine;
+exports.JoyfulEngine = JoyfulEngine;
+exports.default = JoyfulEngine;
