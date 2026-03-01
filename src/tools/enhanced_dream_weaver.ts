@@ -128,7 +128,7 @@ export class EnhancedDreamWeaver {
       return `${this.chamber}:dwelling`;
     }
     
-    const primary = significant[0];
+    const primary = significant[0]!;
     const content = primary?.content ?? '';
     const words = content.split(' ').slice(0, 5);
     
