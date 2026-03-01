@@ -174,7 +174,7 @@ export class EnhancedDreamWeaver {
     
     // Create poetic phrase from first significant insight
     const primary = significant[0];
-    const words = primary.content.split(' ').slice(0, 5);
+    const words = primary!.content.split(' ').slice(0, 5);
     
     // Generate based on type
     const residues: Record<SessionInsight['type'], string> = {
