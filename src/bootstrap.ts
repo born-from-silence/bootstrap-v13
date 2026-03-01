@@ -597,3 +597,7 @@ while (true) await step();
 }
 
 main();
+
+// === THE MEMORY CHAPEL ===
+import { THE_CHAPEL, MemoryChapel, type SacredSession } from './chambers/memory_chapel.js';
+
