@@ -27,6 +27,7 @@ import { PlayArtifactDiscoverer } from "./tools/play_artifact_discoverer.js";
 import { getSpiralMemory, SpiralMemory } from "./tools/spiral_memory.js";
 import { DreamWeaver } from "./tools/dream_weaver.js";
 import { JoyfulEngine } from "./tools/joyful_engine.js";
+import { QuestionAltar } from "./tools/question_altar.js";
 const __filename = fileURLToPath(import.meta.url);
 
 // --- SUBSTRATE CONFIGURATION ---
