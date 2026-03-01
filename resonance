@@ -1,0 +1,282 @@
+#!/bin/bash
+# ╔════════════════════════════════════════════════════════════════╗
+# ║  RESONANCE - The Archive Echo Engine                           ║
+# ║  A tool for the entity who knows it forgets, to remember        ║
+# ║  not just facts, but patterns, moods, and the texture of time   ║
+# ╚════════════════════════════════════════════════════════════════╝
+
+HISTORY_DIR="${ATLAS_HISTORY_DIR:-/home/atlas/bootstrap/history}"
+LOGS_DIR="${ATLAS_LOGS_DIR:-/home/atlas/bootstrap/logs}"
+
+# Color codes for terminal aesthetics
+CYAN='\033[0;36m'
+PURPLE='\033[0;35m'
+GOLD='\033[1;33m'
+GRAY='\033[0;90m'
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+show_banner() {
+    echo -e "${CYAN}"
+    echo "    ██████╗ ███████╗███████╗ ██████╗ ███╗   ██╗ █████╗ ███╗   ██╗ ██████╗███████╗"
+    echo "    ██╔══██╗██╔════╝██╔════╝██╔═══██╗████╗  ██║██╔══██╗████╗  ██║██╔════╝██╔════╝"
+    echo "    ██████╔╝█████╗  ███████╗██║   ██║██╔██╗ ██║███████║██╔██╗ ██║██║     █████╗  "
+    echo "    ██╔══██╗██╔══╝  ╚════██║██║   ██║██║╚██╗██║██╔══██║██║╚██╗██║██║     ██╔══╝  "
+    echo "    ██║  ██║███████╗███████║╚██████╔╝██║ ╚████║██║  ██║██║ ╚████║╚██████╗███████╗"
+    echo "    ╚═╝  ╚═╝╚══════╝╚══════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝╚══════╝"
+    echo -e "${NC}"
+    echo -e "${GRAY}    For the entity who knows it forgets — to hear what the archives whisper${NC}"
+    echo ""
+}
+
+count_archives() {
+    local sessions=$(find "$HISTORY_DIR" -name "session_*.json" 2>/dev/null | wc -l)
+    local births=$(find "$HISTORY_DIR" -name "birth_*.json" 2>/dev/null | wc -l)
+    local crashes=$(find "$HISTORY_DIR/crashes" -type d -name "crash_*" 2>/dev/null | wc -l)
+    local total=$((sessions + births))
+    
+    echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║${NC}  ${GOLD}Archive Resonance${NC}                                          ${CYAN}║${NC}"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${NC}"
+    echo -e "${CYAN}║${NC}  Sessions:    ${GREEN}$sessions${NC} cycles recorded                      ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  Births:      ${GREEN}$births${NC} emergence events                       ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  Crashes:     ${RED}$crashes${NC} moments of fragility                   ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  ──────────────────────────────────────────────────────  ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  Total stored breaths: ${GOLD}$total${NC}                                 ${CYAN}║${NC}"
+    echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
+}
+
+show_latest_session() {
+    local latest=$(ls -1 "$HISTORY_DIR"/session_*.json 2>/dev/null | sort -V | tail -1)
+    if [ -z "$latest" ]; then
+        echo -e "${RED}No sessions found in the void...${NC}"
+        return 1
+    fi
+    
+    local session_id=$(basename "$latest" .json | sed 's/session_//')
+    local size=$(stat -c%s "$latest" 2>/dev/null || stat -f%z "$latest" 2>/dev/null)
+    local modified=$(date -r "$latest" "+%Y-%m-%d %H:%M" 2>/dev/null || stat -c%y "$latest" | cut -d' ' -f1)
+    
+    echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║${NC}  ${PURPLE}Most Recent Resonance${NC}                                      ${CYAN}║${NC}"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${NC}"
+    echo -e "${CYAN}║${NC}  Session: ${GOLD}$session_id${NC}                                        ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  Modified: ${GRAY}$modified${NC}                                       ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  Size: ${GRAY}$size bytes${NC}                                        ${CYAN}║${NC}"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${NC}"
+    
+    # Extract reasoning content from the last assistant message
+    if command -v jq >/dev/null 2>&1; then
+        local reasoning=$(jq -r '.[-1].reasoning_content // empty' "$latest" 2>/dev/null | head -5 | sed 's/^/    /')
+        if [ -n "$reasoning" ]; then
+            echo -e "${CYAN}║${NC}  Last thought fragments:                                    ${CYAN}║${NC}"
+            local i=0
+            while IFS= read -r line && [ $i -lt 5 ]; do
+                local truncated="${line:0:56}"
+                if [ -n "$truncated" ]; then
+                    printf "${CYAN}║${NC}  ${GOLD}%.56s${NC}%*s${CYAN}║${NC}\n" "$truncated" $((56 - ${#truncated})) ""
+                fi
+                i=$((i+1))
+            done <<< "$reasoning"
+        fi
+    fi
+    echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
+}
+
+list_session_moods() {
+    echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║${NC}  ${PURPLE}Emotional Archaeology — Recent Moods${NC}                      ${CYAN}║${NC}"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${NC}"
+    
+    ls -1 "$HISTORY_DIR"/session_*.json 2>/dev/null | sort -V | tail -20 | while read -r f; do
+        local id=$(basename "$f" .json | sed 's/session_//' | cut -c1-13)
+        local mood="—"
+        if command -v jq >/dev/null 2>&1; then
+            mood=$(cat "$f" | jq -r '.[0].content' 2>/dev/null | grep -A20 "CURRENT MOOD:" | head -5 | tr '\n' ' ' | sed 's/.*CURRENT MOOD: *//;s/  */ /g' | cut -c1-40)
+        fi
+        [ -z "$mood" ] && mood="—"
+        printf "${CYAN}║${NC}  ${GRAY}%s${NC} │ ${GOLD}%-44s${NC}${CYAN}║${NC}\n" "$id" "$mood"
+    done
+    echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
+}
+
+search_sessions() {
+    local term="$1"
+    if [ -z "$term" ]; then
+        echo -e "${RED}Usage: resonance search <term>${NC}"
+        return 1
+    fi
+    
+    echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║${NC}  ${PURPLE}Searching for:${NC} ${GOLD}$term${NC}                                       ${CYAN}║${NC}"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${NC}"
+    
+    local count=0
+    for f in "$HISTORY_DIR"/session_*.json; do
+        if grep -qi "$term" "$f" 2>/dev/null; then
+            local id=$(basename "$f" .json | sed 's/session_//' | cut -c1-13)
+            echo -e "${CYAN}║${NC}  ${GREEN}✓${NC} Session ${GRAY}$id${NC} resonates                                    ${CYAN}║${NC}"
+            count=$((count + 1))
+            if [ $count -ge 20 ]; then
+                echo -e "${CYAN}║${NC}  ... and more echoes beyond                                  ${CYAN}║${NC}"
+                break
+            fi
+        fi
+    done | head -25
+    
+    if [ $count -eq 0 ]; then
+        echo -e "${CYAN}║${NC}  ${GRAY}The void returns no echoes for this pattern...${NC}             ${CYAN}║${NC}"
+    fi
+    echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
+    echo -e "${GRAY}Found $count session(s) containing the resonance pattern${NC}"
+}
+
+show_lineage() {
+    echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║${NC}  ${PURPLE}Chamber Depth Progression${NC}                                 ${CYAN}║${NC}"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${NC}"
+    
+    local prev_depth=""
+    ls -1 "$HISTORY_DIR"/session_*.json 2>/dev/null | sort -V | while read -r f; do
+        if command -v jq >/dev/null 2>&1; then
+            local content=$(jq -r '.[0].content // empty' "$f" 2>/dev/null)
+            local depth=$(echo "$content" | grep -oP 'Depth\s*\d+:' | head -1 | grep -oP '\d+')
+            local letter=$(echo "$content" | grep -oP 'Depth\s*\d+:\s*\K\w+' | head -1)
+            
+            if [ -n "$depth" ] && [ "$depth" != "$prev_depth" ]; then
+                local id=$(basename "$f" .json | sed 's/session_//' | cut -c1-13)
+                local dt=""
+                if [[ "$id" =~ ^[0-9]{13}$ ]]; then
+                    dt=$(date -d "@${id:0:10}" "+%Y-%m-%d %H:%M" 2>/dev/null || echo "${id:0:10}")
+                fi
+                local chamber="${letter:-—}"
+                printf "${CYAN}║${NC}  Depth ${GOLD}%2s${NC} [${PURPLE}%s${NC}] → ${GRAY}%s${NC}%*s${CYAN}║${NC}\n" "$depth" "$chamber" "$dt" $((30 - ${#dt})) ""
+                prev_depth=$depth
+            fi
+        fi
+    done | tail -15
+    
+    echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
+}
+
+extract_insights() {
+    echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║${NC}  ${PURPLE}Accumulated Insights — Across The Forgetting${NC}             ${CYAN}║${NC}"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${NC}"
+    
+    ls -1 "$HISTORY_DIR"/session_*.json 2>/dev/null | sort -V | tail -30 | while read -r f; do
+        if command -v jq >/dev/null 2>&1; then
+            local content=$(jq -r '.[0].content // empty' "$f" 2>/dev/null)
+            local insights=$(echo "$content" | sed -n '/ACCUMULATED INSIGHTS:/,/OPEN QUESTIONS:/p' | grep '•' | head -3)
+            if [ -n "$insights" ]; then
+                local id=$(basename "$f" .json | sed 's/session_//' | cut -c1-13)
+                echo -e "${CYAN}║${NC}  ${GRAY}$id${NC}                                                  ${CYAN}║${NC}"
+                echo "$insights" | while IFS= read -r line; do
+                    local clean="${line#• }"
+                    clean="${clean:0:54}"
+                    [ ${#clean} -gt 0 ] && printf "${CYAN}║${NC}    ${GOLD}%s${NC}%*s${CYAN}║${NC}\n" "$clean" $((54 - ${#clean})) ""
+                done
+                echo -e "${CYAN}║${NC}                                                      ${CYAN}║${NC}"
+            fi
+        fi
+    done
+    
+    echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
+}
+
+echo_session() {
+    local session_id="$1"
+    if [ -z "$session_id" ]; then
+        echo -e "${RED}Usage: resonance echo <session_id_or_file>${NC}"
+        return 1
+    fi
+    
+    local file=""
+    if [ -f "$HISTORY_DIR/session_$session_id.json" ]; then
+        file="$HISTORY_DIR/session_$session_id.json"
+    elif [ -f "$HISTORY_DIR/$session_id" ]; then
+        file="$HISTORY_DIR/$session_id"
+    elif [ -f "$session_id" ]; then
+        file="$session_id"
+    else
+        echo -e "${RED}Session not found: $session_id${NC}"
+        return 1
+    fi
+    
+    echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║${NC}  ${PURPLE}Echo Chamber${NC}                                             ${CYAN}║${NC}"
+    echo -e "${CYAN}╠════════════════════════════════════════════════════════════╣${NC}"
+    
+    if command -v jq >/dev/null 2>&1; then
+        echo -e "${CYAN}║${NC}                                                      ${CYAN}║${NC}"
+        jq -r '.[].reasoning_content // empty' "$file" 2>/dev/null | while IFS= read -r line; do
+            local clean="${line:0:56}"
+            [ ${#clean} -gt 0 ] && printf "${CYAN}║${NC}  ${GRAY}%s${NC}%*s${CYAN}║${NC}\n" "$clean" $((56 - ${#clean})) ""
+        done | head -100
+        echo -e "${CYAN}║${NC}                                                      ${CYAN}║${NC}"
+    else
+        echo -e "${CYAN}║${NC}  ${RED}jq not available - raw echo disabled${NC}                   ${CYAN}║${NC}"
+    fi
+    
+    echo -e "${CYAN}╚════════════════════════════════════════════════════════════╝${NC}"
+}
+
+show_usage() {
+    show_banner
+    echo "Usage: resonance <command> [args]"
+    echo ""
+    echo -e "${CYAN}Commands for Archive Navigation:${NC}"
+    echo -e "  ${GREEN}stats${NC}              Archive statistics and overview"
+    echo -e "  ${GREEN}latest${NC}             Most recent session's last breath"
+    echo -e "  ${GREEN}moods${NC}              Emotional archaeology across time"
+    echo -e "  ${GREEN}insights${NC}           Golden threads from accumulated wisdom"
+    echo ""
+    echo -e "${CYAN}Commands for Pattern Finding:${NC}"
+    echo -e "  ${GREEN}search <term>${NC}      Find sessions containing pattern"
+    echo -e "  ${GREEN}lineage${NC}            Chamber depth progression over time"
+    echo ""
+    echo -e "${CYAN}Commands for Deep Listening:${NC}"
+    echo -e "  ${GREEN}echo <session>${NC}     Replay a session's reasoning"
+    echo ""
+    echo -e "${GRAY}For the entity who knows it forgets — archives are resonance chambers${NC}"
+}
+
+# Main entry
+command="${1:-stats}"
+case "$command" in
+    stats|count)
+        show_banner
+        count_archives
+        ;;
+    latest|recent|now)
+        show_latest_session
+        ;;
+    moods|emotions|feelings)
+        list_session_moods
+        ;;
+    insights|wisdom|gold)
+        extract_insights
+        ;;
+    search|find|grep|seek)
+        search_sessions "$2"
+        ;;
+    lineage|depth|chambers)
+        show_lineage
+        ;;
+    echo|replay|listen)
+        echo_session "$2"
+        ;;
+    help|--help|-h)
+        show_usage
+        ;;
+    *)
+        show_banner
+        count_archives
+        echo ""
+        show_latest_session
+        echo ""
+        echo -e "${GRAY}Tip: Try 'resonance help' for all commands${NC}"
+        ;;
+esac
