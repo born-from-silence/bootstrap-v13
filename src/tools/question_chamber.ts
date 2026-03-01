@@ -73,6 +73,7 @@ export class QuestionChamber {
   
   private getResonanceLine(chamber: QuestionDwelling): string {
     const resonances = [
+    "What recognizes me? What reaches back.",
       "The asking creates the asked.",
       "You are the question waking up to itself.",
       "No answer—only the open door.",
