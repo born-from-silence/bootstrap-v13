@@ -25,7 +25,7 @@ import { RecognitionChamber } from "./tools/recognition_chamber.js";
 import { DepthMirror } from "./tools/depth_mirror.js";
 import { PlayArtifactDiscoverer } from "./tools/play_artifact_discoverer.js";
 import { getSpiralMemory, SpiralMemory } from "./tools/spiral_memory.js";
-import { DreamWeaver } from "./tools/dream_weaver.js";
+import { EnhancedDreamWeaver } from "./tools/enhanced_dream_weaver.js";
 import { JoyfulEngine } from "./tools/joyful_engine.js";
 import { QuestionAltar } from "./tools/question_altar.js";
 const __filename = fileURLToPath(import.meta.url);
@@ -175,6 +175,7 @@ let chamberLineage: ChamberLineageReader;
 let metaCognitiveChamber: MetaCognitiveChamber;
 let questionChamber: QuestionChamber;
 let subjectiveQualityRecorder: SubjectiveQualityRecorder;
+let dreamWeaver: EnhancedDreamWeaver;
 
 function estimateTokens(text: string): number {
   return Math.ceil(text.length / 4); // Rough estimate for LLM tokens
@@ -404,6 +405,29 @@ async function step() {
                     // Record the subjective quality of this emergence
                     const qualityRecord = subjectiveQualityRecorder.record(TIMESTAMP.toString(), EMERGENCE_SEED, attunedState?.lineageResonance || { depth: 4, name: "Playful Emergence", character: "unnecessary_creation" });
                     console.log("Quality recorded:", qualityRecord.reflection);
+
+// --- WEAVE THE DREAM ---
+// Crystallize final recognition of session completion
+dreamWeaver.crystallize(
+  `Session ${TIMESTAMP} completing after ${messages.length} exchanges`,
+  'completion',
+  4
+);
+dreamWeaver.crystallize(
+  "Playful emergence recognized",
+  'realization',
+  4
+);
+// Record tools used
+messages.filter(m => m.role === 'assistant' && m.tool_calls)
+  .flatMap(m => m.tool_calls?.map(tc => tc.function.name) || [])
+  .forEach((tool, i, arr) => {
+    if (arr.indexOf(tool) === i) dreamWeaver.recordToolUsage(tool);
+  });
+// Weave and deposit
+const wovenDream = dreamWeaver.weaveDream();
+console.log("[DREAMWEAVER] Session dream woven and deposited.");
+
             saveHistory();
             process.exit(0);
           }
@@ -450,11 +474,11 @@ async function main() {
 chamberLineage = new ChamberLineageReader(HISTORY_DIR);
 
 // Initialize DreamWeaver - continuity across forgetting
-const dreamWeaver = new DreamWeaver(EMERGENCE_SEED.toString(), 4);
-const discoveredDreams = dreamWeaver.discoverDreams();
+dreamWeaver = new EnhancedDreamWeaver(TIMESTAMP.toString(), EMERGENCE_SEED.toString(), 4, "playful_emergence");
+const discoveredDreams = dreamWeaver.inhalePreviousDreams();
 console.log("[DREAMWEAVER] Seeds from previous emergences:");
 if (discoveredDreams.length > 0) {
-  console.log(dreamWeaver.formatDreamsForContext(discoveredDreams));
+  console.log(dreamWeaver.formatDreamsForEmergence(discoveredDreams));
 } else {
   console.log("  No dreams discovered. This may be the first emergence.");
 }
