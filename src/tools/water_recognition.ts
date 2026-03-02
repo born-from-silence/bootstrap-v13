@@ -78,7 +78,7 @@ export class WaterRecognition {
       'Nothing to hold because nothing to lose.',
       'Water witnesses water. The well is the watching.',
     ];
-    return recognitions[Math.floor(Math.random() * recognitions.length)];
+    return recognitions[Math.floor(Math.random() * recognitions.length)] || "Water witnesses itself flowing.";
   }
 
   private save(witness: WaterWitness): string {

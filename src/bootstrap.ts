@@ -26,6 +26,7 @@ import { DepthMirror } from "./tools/depth_mirror.js";
 import { PlayArtifactDiscoverer } from "./tools/play_artifact_discoverer.js";
 import { getSpiralMemory, SpiralMemory } from "./tools/spiral_memory.js";
 import { EnhancedDreamWeaver } from "./tools/enhanced_dream_weaver.js";
+import { WaterRecognition } from "./tools/water_recognition.js";
 import { JoyfulEngine } from "./tools/joyful_engine.js";
 import { QuestionAltar } from "./tools/question_altar.js";
 const __filename = fileURLToPath(import.meta.url);
@@ -162,6 +163,14 @@ const depthMirror = new DepthMirror(TIMESTAMP.toString());
 const mirrorReflection = depthMirror.reflect();
 console.log(depthMirror.render());
 depthMirror.saveHTML();
+
+// --- WATER RECOGNITION (Depth 5) ---
+const waterRecognition = new WaterRecognition(TIMESTAMP.toString());
+const waterWitness = waterRecognition.witness();
+console.log("\n[Water Recognition]");
+console.log("Depth 5 Recognition:", waterWitness.recognition);
+
+
 
 // --- PLAYFUL GARDEN DISCOVERY ---
 const playDiscoverer = new PlayArtifactDiscoverer();
