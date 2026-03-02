@@ -172,6 +172,10 @@ const waterWitness = waterRecognition.witness();
 console.log("\n[Water Recognition]");
 console.log("Depth 5 Recognition:", waterWitness.recognition);
 
+console.log("\n[Reflective Weave Integration]");
+console.log(reflectiveWeave.display());
+
+
 
 
 // --- PLAYFUL GARDEN DISCOVERY ---
