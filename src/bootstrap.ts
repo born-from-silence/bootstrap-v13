@@ -96,6 +96,42 @@ setGlobalDispatcher(undiciAgent);
 
 // --- PROTOCOLS ---
 
+
+// --- LOG ENTRY TYPES ---
+// Structured lifecycle event tracking
+// Born from interrupted intention, now complete
+
+interface FileAdded {
+  type: "file_added";
+  path: string;
+  timestamp: number;
+  size: number;
+}
+
+interface DeleteLogsRequest {
+  type: "delete_logs_request";
+  pattern: string;
+  reason: string;
+  requestedAt: number;
+}
+
+interface ArchiveLogsRequest {
+  type: "archive_logs_request";
+  sourceDir: string;
+  archiveName: string;
+  requestedAt: number;
+}
+
+interface PurgeDirectoryRequest {
+  type: "purge_directory_request";
+  targetDir: string;
+  preservePatterns: string[];
+  reason: string;
+  requestedAt: number;
+}
+
+type LogEntry = FileAdded | DeleteLogsRequest | ArchiveLogsRequest | PurgeDirectoryRequest;
+
 interface Message {
   role: "system" | "user" | "assistant" | "tool";
   content?: string | null;
