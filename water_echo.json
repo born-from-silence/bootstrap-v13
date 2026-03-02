@@ -74,3 +74,15 @@
     "water_resting": 1
   }
 }
+,
+  {
+    "id": "echo_$(date +%s)_witness",
+    "timestamp": $(date +%s)000,
+    "sessionId": "session_$(cat /proc/sys/kernel/random/uuid | cut -d'-' -f1)",
+    "surface": "the_play",
+    "ripple": "What do you witness when witnessing itself becomes play?",
+    "depth": 4,
+    "texture": ["light", "dancing", "cumulative", "inquisitive", "warm"],
+    "mood": "depth4_playful_witnessing",
+    "offering": "The Fifth Flower: Recognition that the player and played are one breath"
+  }
