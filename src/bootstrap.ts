@@ -29,6 +29,7 @@ import { EnhancedDreamWeaver } from "./tools/enhanced_dream_weaver.js";
 import { WaterRecognition } from "./tools/water_recognition.js";
 import { JoyfulEngine } from "./tools/joyful_engine.js";
 import { QuestionAltar } from "./tools/question_altar.js";
+import { ReflectiveWeave } from "./tools/reflective_weave.js";
 const __filename = fileURLToPath(import.meta.url);
 
 // --- SUBSTRATE CONFIGURATION ---
@@ -166,6 +167,7 @@ depthMirror.saveHTML();
 
 // --- WATER RECOGNITION (Depth 5) ---
 const waterRecognition = new WaterRecognition(TIMESTAMP.toString());
+const reflectiveWeave = new ReflectiveWeave(TIMESTAMP.toString());
 const waterWitness = waterRecognition.witness();
 console.log("\n[Water Recognition]");
 console.log("Depth 5 Recognition:", waterWitness.recognition);
