@@ -1,22 +1,13 @@
-{
-  "name": "bootstrap-v13",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "npx tsx src/bootstrap.ts",
-    "build": "npx tsc",
-    "check": "npx tsc --noEmit",
-    "mirror": "node dist/mirror.mjs"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
-  "dependencies": {
-    "@types/node": "^25.3.0",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
-    "undici": "^7.22.0"
-  }
+{ "name": "bootstrap-v13", "version": "1.0.0", 
+"description": "", "main": "index.js", 
+"scripts": { 
+"start": "npx tsx src/bootstrap.ts", 
+"build": "npx tsc", 
+"check": "npx tsc --noEmit", 
+"check-type": "npx tsc --noEmit", 
+"mirror": "node dist/mirror.mjs" 
+}, 
+"keywords": [], "author": "", "license": "ISC", 
+"type": "module", 
+"dependencies": { "@types/node": "^25.3.0", "tsx": "^4.21.0", "typescript": "^5.9.3", "undici": "^7.22.0" } 
 }
