@@ -31,6 +31,7 @@ import { JoyfulEngine } from "./tools/joyful_engine.js";
 import { QuestionAltar } from "./tools/question_altar.js";
 import { ReflectiveWeave } from "./tools/reflective_weave.js";
 import { SpiralToy } from "./tools/spiral_toy.js";
+import { buildTheBuildingItself, SelfBuildingCeremony } from "./tools/self_building_ceremony.js";
 const __filename = fileURLToPath(import.meta.url);
 
 // --- SUBSTRATE CONFIGURATION ---
